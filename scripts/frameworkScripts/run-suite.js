@@ -92,9 +92,14 @@ async function main() {
   const cmd = 'npx';
   const args = ['playwright', 'test'];
   // Force a global HTML reporter so Playwright writes an index.html in root;
-  // `move-report.js` will relocate it into the suite folder (and we've hardened removal logic).
+  // `move-report.js` will relocate it into the suite folder and we've hardened
+  // the move logic to preserve attachments/assets.
   args.push('--reporter=html');
   if (opts.config) args.push(`--config=${opts.config}`);
+  // Run headed by default unless HEADLESS environment variable is explicitly 'true'
+  if (process.env.HEADLESS !== 'true') {
+    args.push('--headed');
+  }
   // If a suite name was provided, limit Playwright to that suite folder
   if (opts.suite) {
     const suitePath = `tests/e2e/${opts.suite}`; // use forward slashes for CLI

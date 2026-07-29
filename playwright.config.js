@@ -7,7 +7,7 @@ export default defineConfig({
   use: {
     headless: process.env.HEADLESS === 'true',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    screenshot: 'on',
     video: 'retain-on-failure'
   },
   reporters: [ ['list'] ]

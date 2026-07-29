@@ -50,6 +50,52 @@ function ensureSuiteDir(name) {
   return suiteDir;
 }
 
+function copyDirSync(src, dst) {
+  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(dst)) fs.mkdirSync(dst, { recursive: true });
+  for (const entry of fs.readdirSync(src)) {
+    const s = path.join(src, entry);
+    const d = path.join(dst, entry);
+    const stat = fs.statSync(s);
+    if (stat.isDirectory()) copyDirSync(s, d);
+    else fs.copyFileSync(s, d);
+  }
+}
+
+function preserveAttachmentsAndRemove(runPath, suiteDir, runName) {
+  try {
+    // copy attachments directory (if present) into suiteDir/attachments
+    // (placed directly under suiteDir so relative paths in index.html remain valid)
+    const attachmentsSrc = path.join(runPath, 'attachments');
+    if (fs.existsSync(attachmentsSrc) && fs.statSync(attachmentsSrc).isDirectory()) {
+      const attachmentsDst = path.join(suiteDir, 'attachments');
+      copyDirSync(attachmentsSrc, attachmentsDst);
+      console.log(`Copied attachments from ${runPath} -> ${attachmentsDst}`);
+    }
+    // copy any other non-index files (assets) into suiteDir to preserve paths
+    const others = fs.readdirSync(runPath).filter(n => n !== 'index.html' && n !== 'attachments');
+    if (others.length > 0) {
+      for (const o of others) {
+        const s = path.join(runPath, o);
+        const d = path.join(suiteDir, o);
+        const stat = fs.statSync(s);
+        if (stat.isDirectory()) copyDirSync(s, d);
+        else {
+          if (!fs.existsSync(suiteDir)) fs.mkdirSync(suiteDir, { recursive: true });
+          fs.copyFileSync(s, d);
+        }
+      }
+      console.log(`Copied additional run assets from ${runPath} -> ${suiteDir}`);
+    }
+    // now remove the run folder
+    fs.rmSync(runPath, { recursive: true, force: true });
+    console.log(`Removed run folder ${runPath} after preserving attachments/assets`);
+  } catch (e) {
+    console.warn('Failed to preserve attachments for', runPath, e);
+    try { fs.rmSync(runPath, { recursive: true, force: true }); } catch (er) {}
+  }
+}
+
 function moveIndex(srcIndexPath, suiteName) {
   const suiteDir = ensureSuiteDir(suiteName);
   const dst = path.join(suiteDir, 'index.html');
@@ -73,8 +119,8 @@ if (explicitSuite) {
       // Only remove run-* folders to avoid accidentally deleting suite folders
       const targetRunPath = path.join(root, r);
       if (r.startsWith('run-')) {
-        console.log('Removing run folder:', targetRunPath);
-        try { fs.rmSync(targetRunPath, { recursive: true, force: true }); console.log(`Moved ${r}/index.html into playwright-report/${explicitSuite} and removed ${r}`); }
+        console.log('Preserving attachments then removing run folder:', targetRunPath);
+        try { preserveAttachmentsAndRemove(targetRunPath, path.join(root, explicitSuite), r); console.log(`Moved ${r}/index.html into playwright-report/${explicitSuite} and removed ${r}`); }
         catch (e) { console.warn('Failed removing run folder', r, e); }
       } else {
         console.log(`Moved ${r}/index.html into playwright-report/${explicitSuite} (did not remove ${r} because it is not a run-* folder)`);
@@ -121,8 +167,8 @@ for (const r of runs) {
         moveIndex(runIndex, c);
         const targetRunPath = path.join(root, r);
         if (r.startsWith('run-')) {
-          console.log('Removing run folder (detected candidate):', targetRunPath);
-          try { fs.rmSync(targetRunPath, { recursive: true, force: true }); } catch (e) {}
+            console.log('Preserving attachments then removing run folder (detected candidate):', targetRunPath);
+            try { preserveAttachmentsAndRemove(targetRunPath, path.join(root, c), r); } catch (e) {}
         }
         console.log(`Detected suite '${c}' in ${r}; moved index.html into playwright-report/${c} and removed ${r}`);
         moved = true;
@@ -134,8 +180,8 @@ for (const r of runs) {
       moveIndex(runIndex, candidates[0]);
       const targetRunPath = path.join(root, r);
       if (r.startsWith('run-')) {
-        console.log('Removing run folder (single candidate):', targetRunPath);
-        try { fs.rmSync(targetRunPath, { recursive: true, force: true }); } catch (e) {}
+        console.log('Preserving attachments then removing run folder (single candidate):', targetRunPath);
+        try { preserveAttachmentsAndRemove(targetRunPath, path.join(root, candidates[0]), r); } catch (e) {}
       }
       console.log(`Single candidate '${candidates[0]}' used for ${r}; moved into playwright-report/${candidates[0]}`);
       continue;
@@ -144,6 +190,7 @@ for (const r of runs) {
     const fallback = r;
     moveIndex(runIndex, fallback);
     try { const targetRunPath = path.join(root, r); if (r.startsWith('run-')) { console.log('Removing run folder (fallback):', targetRunPath); fs.rmSync(targetRunPath, { recursive: true, force: true }); } } catch (e) {}
+    try { const targetRunPath = path.join(root, r); if (r.startsWith('run-')) { console.log('Preserving attachments then removing run folder (fallback):', targetRunPath); preserveAttachmentsAndRemove(targetRunPath, path.join(root, fallback), r); } } catch (e) {}
     console.log(`Could not detect suite for ${r}; moved index.html into playwright-report/${fallback}`);
   } catch (e) {
     console.warn('Error processing', r, e);
