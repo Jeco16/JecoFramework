@@ -1,0 +1,30 @@
+JecoFramework — NOTICE
+Generated from package-lock.json on 2026-07-29
+
+Copyright 2026 Jacopo Enrico Marinaccio
+
+This product includes third-party components. When redistributing this
+work (or derivative works), include this NOTICE and keep the
+Apache-2.0 LICENSE in the distribution.
+
+Third-party attributions:
+
+- @playwright/test — Apache-2.0 — https://www.npmjs.com/package/@playwright/test
+- playwright — Apache-2.0 — https://www.npmjs.com/package/playwright
+- playwright-core — Apache-2.0 — https://www.npmjs.com/package/playwright-core
+- cross-env — MIT — https://www.npmjs.com/package/cross-env
+- cross-spawn — MIT — https://www.npmjs.com/package/cross-spawn
+- dotenv — BSD-2-Clause — https://www.npmjs.com/package/dotenv
+- fsevents (optional) — MIT — https://www.npmjs.com/package/fsevents
+- isexe — ISC — https://www.npmjs.com/package/isexe
+- path-key — MIT — https://www.npmjs.com/package/path-key
+- shebang-command — MIT — https://www.npmjs.com/package/shebang-command
+- shebang-regex — MIT — https://www.npmjs.com/package/shebang-regex
+- which — ISC — https://www.npmjs.com/package/which
+
+Notes:
+- Some packages are development-only (devDependencies) or optional on
+  certain platforms (e.g., `fsevents` on macOS). Review `package.json`
+  and `package-lock.json` for the exact dependency graph if you need a
+  complete attribution chain.
+- Keep `LICENSE` (Apache-2.0) in the project root: see [LICENSE](LICENSE).

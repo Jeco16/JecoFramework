@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+Copyright 2026 Jacopo Enrico Marinaccio
+Licensed under the Apache License, Version 2.0
+You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+*/
 const fs = require('fs/promises');
 const fsSync = require('fs');
 const path = require('path');
@@ -54,7 +58,12 @@ async function main() {
 
     // creazione file config di default
     const configPath = path.join(dest, 'suite.config.js');
-    const basic = `import { defineConfig, devices } from '@playwright/test';
+    const basic = `/*
+      Copyright 2026 Jacopo Enrico Marinaccio
+      Licensed under the Apache License, Version 2.0
+      You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+      */
+      import { defineConfig, devices } from '@playwright/test';
       import path from 'path';
 
       export const suite = {
@@ -77,7 +86,12 @@ async function main() {
 
     //creazione file fi test di default
     const testPath = path.join(dest, 'TestTemplate001.spec.js');
-    const testBasic = `import { test, expect } from '@playwright/test';
+    const testBasic = `/*
+      Copyright 2026 Jacopo Enrico Marinaccio
+      Licensed under the Apache License, Version 2.0
+      You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+      */
+      import { test, expect } from '@playwright/test';
       import { suite } from './suite.config.js';
       import { BasePage } from '../../../src/pages/frameworkPages/base.page.js';
       import { logger } from '../../../src/utils/frameworkUtils/logger.js';
