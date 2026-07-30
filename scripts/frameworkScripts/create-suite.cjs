@@ -84,26 +84,22 @@ async function main() {
       `;
     await fs.writeFile(configPath, basic, 'utf8');   
 
-    //creazione file fi test di default
+    //creazione file di test di default
     const testPath = path.join(dest, 'TestTemplate001.spec.js');
     const testBasic = `/*
       Copyright 2026 Jacopo Enrico Marinaccio
       Licensed under the Apache License, Version 2.0
       You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
       */
-      import { test, expect } from '@playwright/test';
       import { suite } from './suite.config.js';
-      import { BasePage } from '../../../src/pages/frameworkPages/base.page.js';
       import { logger } from '../../../src/utils/frameworkUtils/logger.js';
+      import { test, expect } from '../../fixtures/fixtures.js';
 
       test.describe(suite.name, () => {
-        test('Define your testname here', async ({ page }) => {
+        test('Define your testname here', async ({ basePage }) => {
       
           // Define your test steps here, for example:
-          const basePage = new BasePage(page);
-          await basePage.goto(suite.baseURL);
-          await basePage.expectTitle('Define your expected title here');
-          logger.pass('Test executed successfully');
+          await basePage.open(suite.baseURL, 'Your expected title');
       
         });
       });
