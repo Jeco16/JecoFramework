@@ -33,9 +33,9 @@ async function removeIfExists(target) {
     const arg = process.argv[2];
     const name = arg
       ? arg.trim()
-      : (await question('Nome della suite da cancellare (es. suite03_myteam): ')).trim();
+      : (await question('Name of the suite to delete: ')).trim();
     if (!name) {
-      console.error('Nome suite obbligatorio. Uscita.');
+      console.error('Suite name required!');
       process.exit(1);
     }
 
@@ -43,35 +43,35 @@ async function removeIfExists(target) {
     const reportDir = path.resolve(process.cwd(), 'playwright-report', name);
 
     if (!fs.existsSync(suiteDir)) {
-      console.error('Directory suite non trovata:', suiteDir);
+      console.error('Suite directory not found:', suiteDir);
       process.exit(1);
     }
 
     const confirm = (
       await question(
-        `Confermi la cancellazione irreversibile di "${name}"? Digita "yes" per confermare: `
+        `Confirm irreversible deletion of "${name}"? Type "yes" to confirm: `
       )
     ).trim();
     if (confirm !== 'yes') {
-      console.log('Annullato.');
+      console.log('Cancelled.');
       process.exit(0);
     }
 
     const removedSuite = await removeIfExists(suiteDir);
-    if (removedSuite) console.log('Suite rimossa:', suiteDir);
-    else console.warn('Impossibile rimuovere la suite (permessi?):', suiteDir);
+    if (removedSuite) console.log('Suite removed:', suiteDir);
+    else console.warn('Unable to remove suite (permissions?):', suiteDir);
 
     if (fs.existsSync(reportDir)) {
       const removedReport = await removeIfExists(reportDir);
-      if (removedReport) console.log('Report relativo rimosso:', reportDir);
-      else console.warn('Impossibile rimuovere il report relativo (permessi?):', reportDir);
+      if (removedReport) console.log('Related report removed:', reportDir);
+      else console.warn('Unable to remove related report (permissions?):', reportDir);
     } else {
-      console.log('Nessun report relativo trovato in playwright-report per questa suite.');
+      console.log('No related report found in playwright-report for this suite.');
     }
 
     process.exit(0);
   } catch (err) {
-    console.error('Errore:', err);
+    console.error('Error:', err);
     process.exit(1);
   }
 })();

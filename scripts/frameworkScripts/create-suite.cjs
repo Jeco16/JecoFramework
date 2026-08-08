@@ -31,7 +31,7 @@ async function main() {
     //const template = (await rl.question(`Template suite (default: ${defaultTemplate}): `)) || defaultTemplate;
     const name = (await rl.question('New suite name: ')).trim();
     if (!name) {
-      console.error('Nome suite obbligatorio. Esco.');
+      console.error('Suite name required!');
       process.exit(1);
     }
 
@@ -42,21 +42,33 @@ async function main() {
     try {
       await fs.access(src);
     } catch {
-      console.error(`Template non trovato: ${src}`);
+      console.error(`template not found: ${src}`);
       process.exit(1);
     }
 
     if (fsSync.existsSync(dest)) {
       const overwrite = (
-        await rl.question(`La suite ${name} esiste già. Sovrascrivere? (y/N): `)
+        await rl.question(`The suite ${name} already exists. Overwrite? (y/N): `)
       ).toLowerCase();
       if (overwrite !== 'y') {
-        console.log('Annullato.');
+        console.log('Cancelled.');
         process.exit(0);
       }
     }
 
     await copyRecursive(src, dest);
+
+    // Remove unwanted template test(s) copied from the template folder
+    const unwantedFiles = ['Test001_Login.spec.js'];
+    for (const f of unwantedFiles) {
+      const p = path.join(dest, f);
+      try {
+        if (fsSync.existsSync(p)) {
+          fsSync.unlinkSync(p);
+        }
+      } catch (err) {
+      }
+    }
 
     // creazione file config di default
     const configPath = path.join(dest, 'suite.config.js');
@@ -109,8 +121,8 @@ async function main() {
       `;
     await fs.writeFile(testPath, testBasic, 'utf8');
 
-    console.log(`Suite creata: ${dest}`);
-    console.log('Ricontrolla e personalizza la config/env/test prima di eseguire.');
+    console.log(`Suite created: ${dest}`);
+    console.log('Review and customize before running.');
   } finally {
     rl.close();
   }
