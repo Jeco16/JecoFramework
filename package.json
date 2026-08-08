@@ -16,11 +16,19 @@
     "test:debug": "cross-env PWDEBUG=1 npx playwright test",
     "install:browsers": "npx playwright install",
     "create-suite": "node scripts/frameworkScripts/create-suite.cjs",
-    "delete-suite": "node scripts/frameworkScripts/delete-suite.cjs"
-    },
+    "delete-suite": "node scripts/frameworkScripts/delete-suite.cjs",
+    "lint": "eslint -c src/utils/frameworkUtils/.eslintrc.cjs . --ext .js",
+    "lint:fix": "eslint -c src/utils/frameworkUtils/.eslintrc.cjs . --ext .js --fix",
+    "format": "prettier --config src/utils/frameworkUtils/.prettierrc --write \"**/*.{js,json,md}\""
+  },
   "devDependencies": {
     "@playwright/test": "^1.38.0",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.0"
-    }
+    "dotenv": "^16.0.0",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-import": "^2.28.0"
+  }
 }

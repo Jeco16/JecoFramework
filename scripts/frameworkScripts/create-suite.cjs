@@ -47,7 +47,9 @@ async function main() {
     }
 
     if (fsSync.existsSync(dest)) {
-      const overwrite = (await rl.question(`La suite ${name} esiste già. Sovrascrivere? (y/N): `)).toLowerCase();
+      const overwrite = (
+        await rl.question(`La suite ${name} esiste già. Sovrascrivere? (y/N): `)
+      ).toLowerCase();
       if (overwrite !== 'y') {
         console.log('Annullato.');
         process.exit(0);
@@ -82,7 +84,7 @@ async function main() {
         projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }]
       });
       `;
-    await fs.writeFile(configPath, basic, 'utf8');   
+    await fs.writeFile(configPath, basic, 'utf8');
 
     //creazione file di test di default
     const testPath = path.join(dest, 'TestTemplate001.spec.js');

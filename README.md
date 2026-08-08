@@ -45,10 +45,10 @@ Report handling and new scripts
 - Test runs write an HTML `index.html` report which is moved into `playwright-report/<suite>` after each run.
 - To avoid overwriting other suites' reports, the runner temporarily backs up existing suite folders, lets Playwright write the root report, then moves the report into the correct suite folder and restores backups.
 - Key scripts and files:
-	- `scripts/run-suite.js`: main test runner. Pass `--suite=<name>` or set `SUITE_NAME` env var.
-	- `scripts/clean-report-indexes.js`: removes `index.html` entries (accepts optional suite name).
-	- `scripts/prepare-report.js`: creates `playwright-report/<suite>` and removes only that suite's `index.html`.
-	- `scripts/move-report.js`: moves the generated `index.html` into the suite folder and only removes `run-*` temporary folders.
+  - `scripts/run-suite.js`: main test runner. Pass `--suite=<name>` or set `SUITE_NAME` env var.
+  - `scripts/clean-report-indexes.js`: removes `index.html` entries (accepts optional suite name).
+  - `scripts/prepare-report.js`: creates `playwright-report/<suite>` and removes only that suite's `index.html`.
+  - `scripts/move-report.js`: moves the generated `index.html` into the suite folder and only removes `run-*` temporary folders.
 
 Examples
 

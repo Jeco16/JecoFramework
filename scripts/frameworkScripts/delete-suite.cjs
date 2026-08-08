@@ -10,7 +10,12 @@ const readline = require('readline');
 
 function question(prompt) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((res) => rl.question(prompt, ans => { rl.close(); res(ans); }));
+  return new Promise((res) =>
+    rl.question(prompt, (ans) => {
+      rl.close();
+      res(ans);
+    })
+  );
 }
 
 async function removeIfExists(target) {
@@ -26,7 +31,9 @@ async function removeIfExists(target) {
 (async () => {
   try {
     const arg = process.argv[2];
-    const name = arg ? arg.trim() : (await question('Nome della suite da cancellare (es. suite03_myteam): ')).trim();
+    const name = arg
+      ? arg.trim()
+      : (await question('Nome della suite da cancellare (es. suite03_myteam): ')).trim();
     if (!name) {
       console.error('Nome suite obbligatorio. Uscita.');
       process.exit(1);
@@ -40,7 +47,11 @@ async function removeIfExists(target) {
       process.exit(1);
     }
 
-    const confirm = (await question(`Confermi la cancellazione irreversibile di "${name}"? Digita "yes" per confermare: `)).trim();
+    const confirm = (
+      await question(
+        `Confermi la cancellazione irreversibile di "${name}"? Digita "yes" per confermare: `
+      )
+    ).trim();
     if (confirm !== 'yes') {
       console.log('Annullato.');
       process.exit(0);
