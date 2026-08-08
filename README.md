@@ -1,6 +1,6 @@
 # JecoFramework - Playwright automation framework
 
-![Version](https://img.shields.io/github/v/release/Jeco16/JecoFramework-blue)
+![Version](https://img.shields.io/github/v/release/Jeco16/JecoFramework)
 ![Playwright](https://img.shields.io/badge/Playwright-8A2BE2)
 ![Node](https://img.shields.io/badge/Node.js-green)
 ![License](https://img.shields.io/badge/license-Apache%202.0-orange)
