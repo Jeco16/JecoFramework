@@ -4,6 +4,9 @@
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "pretest": "node -e \"require('fs').mkdirSync('./playwright-report',{recursive:true}); require('fs').mkdirSync('./artifacts',{recursive:true});\"",
     "test": "node ./scripts/frameworkScripts/run-suite.js",

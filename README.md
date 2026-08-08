@@ -4,6 +4,11 @@ Licensed under the Apache License 2.0 — see the LICENSE file for details.
 
 Setup
 
+Prerequisites
+
+- Node.js >= 18.0.0 (see `package.json` "engines")
+- Recommended: commit `package-lock.json` for reproducible installs
+
 1. Install node deps:
 
 ```bash
