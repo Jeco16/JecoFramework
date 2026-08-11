@@ -6,6 +6,7 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
 
 function parseArgs(argv) {
   const opts = {};
@@ -72,16 +73,150 @@ async function main() {
     }
   }
 
-  if (!opts.suite && opts.config) {
+  if (opts.config) {
     try {
       const cfgPath = path.resolve(process.cwd(), opts.config);
-      const cfgUrl = `file://${cfgPath}`;
-      const mod = await import(cfgUrl);
-      if (mod && mod.suite && mod.suite.name) {
-        opts.suite = mod.suite.name;
+      const src = fs.readFileSync(cfgPath, 'utf8');
+
+      // Try AST parsing using `acorn` for robust extraction of `suite` object.
+      // If `acorn` is not installed, fall back to the legacy text-based extractor.
+      let detectedTags = [];
+      let suiteName;
+      let parsedWithAST = false;
+
+      try {
+        let acornMod;
+        try {
+          acornMod = await import('acorn');
+          acornMod = acornMod && (acornMod.default || acornMod);
+        } catch (ie) {
+          acornMod = null;
+        }
+
+        if (acornMod) {
+          const ast = acornMod.parse(src, { ecmaVersion: 2022, sourceType: 'module' });
+          const body = ast && ast.body ? ast.body : [];
+
+          const extractFromObject = (objNode) => {
+            if (!objNode || objNode.type !== 'ObjectExpression') return;
+            for (const prop of objNode.properties || []) {
+              const key = prop.key && (prop.key.name || prop.key.value);
+              if (!key) continue;
+              if (key === 'name') {
+                if (prop.value && prop.value.type === 'Literal') suiteName = prop.value.value;
+              }
+              if (key === 'tags') {
+                if (prop.value && prop.value.type === 'ArrayExpression') {
+                  for (const el of prop.value.elements) {
+                    if (!el) continue;
+                    if (el.type === 'Literal') detectedTags.push(el.value);
+                  }
+                }
+              }
+            }
+          };
+
+          for (const node of body) {
+            if (node.type === 'ExportNamedDeclaration' && node.declaration) {
+              const decl = node.declaration;
+              if (decl.type === 'VariableDeclaration') {
+                for (const d of decl.declarations || []) {
+                  if (d.id && d.id.name === 'suite' && d.init) {
+                    extractFromObject(d.init);
+                    parsedWithAST = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (parsedWithAST) break;
+            // also accept plain variable declaration: const suite = { ... }
+            if (node.type === 'VariableDeclaration') {
+              for (const d of node.declarations || []) {
+                if (d.id && d.id.name === 'suite' && d.init) {
+                  extractFromObject(d.init);
+                  parsedWithAST = true;
+                  break;
+                }
+              }
+            }
+            if (parsedWithAST) break;
+          }
+        } else {
+          console.warn('acorn not found; falling back to text-based suite parsing. For robust parsing install `acorn`.');
+        }
+      } catch (e) {
+        // any AST parsing issues fall back to text parsing below
+        console.warn('AST parsing failed, falling back to text extraction:', e && e.message ? e.message : e);
       }
+
+      // If AST parsing didn't yield results, fall back to the legacy text extraction
+      if (!parsedWithAST) {
+        // Extract the `suite` object block to avoid matching project names like 'chromium'
+        let suiteBlock = null;
+        const exportIdx = src.indexOf('export const suite');
+        const constIdx = src.indexOf('const _suite');
+        const startIdx = exportIdx >= 0 ? exportIdx : constIdx >= 0 ? constIdx : -1;
+        if (startIdx >= 0) {
+          const braceIdx = src.indexOf('{', startIdx);
+          if (braceIdx >= 0) {
+            let depth = 0;
+            for (let i = braceIdx; i < src.length; i++) {
+              const ch = src[i];
+              if (ch === '{') depth++;
+              else if (ch === '}') depth--;
+              if (depth === 0) {
+                suiteBlock = src.slice(braceIdx + 1, i);
+                break;
+              }
+            }
+          }
+        }
+
+        const searchArea = suiteBlock || src;
+
+        // detect suite name without importing (search only in suiteBlock)
+        const nameMatch = searchArea.match(/\bname\s*:\s*(['\"])([^'\"]+)\1/);
+        if (nameMatch) suiteName = nameMatch[2];
+
+        // detect tags array content (search only in suiteBlock)
+        const tagsMatch = searchArea.match(/\btags\s*:\s*\[([^\]]*)\]/m);
+        if (tagsMatch) {
+          const inside = tagsMatch[1];
+          const tagStrings = inside.match(/(['\"])(.*?)\1/g);
+          if (tagStrings) detectedTags = tagStrings.map((s) => s.slice(1, -1));
+        }
+      }
+
+      if (suiteName) opts.suite = suiteName;
+
+      // determine env from tags (accept separators :, ., =, -)
+      const knownEnvs = ['dev', 'qa', 'uat', 'prod', 'staging', 'preprod'];
+      let suiteEnv = null;
+      for (const t of detectedTags) {
+        if (!t) continue;
+        const m = String(t).match(/^(?:env(?:ironment)?[:=.\- _]?)([a-z0-9_-]+)$/i);
+        if (m) {
+          suiteEnv = m[1].toLowerCase();
+          break;
+        }
+        if (knownEnvs.includes(String(t).toLowerCase())) {
+          suiteEnv = String(t).toLowerCase();
+          break;
+        }
+      }
+      if (!suiteEnv) suiteEnv = process.env.ENV || process.env.NODE_ENV || 'dev';
+      process.env.ENV = suiteEnv;
+
+      // load .env files now that we know the env
+      const baseEnv = path.join(process.cwd(), '.env');
+      if (fs.existsSync(baseEnv)) dotenv.config({ path: baseEnv });
+      const envFile = path.join(process.cwd(), `.env.${suiteEnv}`);
+      if (fs.existsSync(envFile)) dotenv.config({ path: envFile });
+
+      console.log(`Detected suite env '${suiteEnv}' from ${opts.config}`);
     } catch (e) {
-      // ignore, require explicit --suite later
+      // ignore parsing errors and fall back
     }
   }
 
@@ -170,6 +305,7 @@ async function main() {
     /* ignore backup errors */
   }
 
+  console.log('Spawning Playwright:', cmd, args.join(' '), 'cwd=', process.cwd());
   const child = spawn(cmd, args, { stdio: 'inherit', shell: true });
   child.on('exit', (code) => {
     // After tests, move index.html if Playwright wrote it to root

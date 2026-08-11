@@ -10,7 +10,7 @@ import { test, expect } from '../../fixtures/fixtures.js';
 test.describe(suite.name, () => {
   test('Test template 001 - login e logout with fixture', async ({ basePage, templatePage }) => {
     await basePage.open(suite.baseURL, /Swag Labs/);
-    await templatePage.login(suite.env.USER_1, suite.env.PASS);
+    await templatePage.login(suite.env.credentials.USER_1, suite.env.credentials.PASSWORD);
     await templatePage.logout();
   });
 });

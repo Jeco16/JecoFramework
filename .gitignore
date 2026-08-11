@@ -3,3 +3,9 @@ playwright-report/
 artifacts/
 test-results/
 .env
+.env.*
+!.env.example
+!.env.dev.example
+!.env.qa.example
+!.env.uat.example
+!.env.prod.example

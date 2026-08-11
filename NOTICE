@@ -1,5 +1,5 @@
 JecoFramework — NOTICE
-Generated from package-lock.json on 2026-07-29
+Generated from package-lock.json on 2026-08-11
 
 Copyright 2026 Jacopo Enrico Marinaccio
 
@@ -21,10 +21,18 @@ Third-party attributions:
 - shebang-command — MIT — https://www.npmjs.com/package/shebang-command
 - shebang-regex — MIT — https://www.npmjs.com/package/shebang-regex
 - which — ISC — https://www.npmjs.com/package/which
+- eslint — MIT — https://www.npmjs.com/package/eslint
+- prettier — MIT — https://www.npmjs.com/package/prettier
+- eslint-config-prettier — MIT — https://www.npmjs.com/package/eslint-config-prettier
+- eslint-plugin-prettier — MIT — https://www.npmjs.com/package/eslint-plugin-prettier
+- eslint-plugin-import — MIT — https://www.npmjs.com/package/eslint-plugin-import
+- acorn — MIT — https://www.npmjs.com/package/acorn
 
 Notes:
 - Some packages are development-only (devDependencies) or optional on
-  certain platforms (e.g., `fsevents` on macOS). Review `package.json`
-  and `package-lock.json` for the exact dependency graph if you need a
-  complete attribution chain.
+  certain platforms (e.g., `fsevents` on macOS). This NOTICE includes
+  commonly used runtime and dev dependencies found in `package.json`
+  and `package-lock.json`. For an exhaustive, up-to-date list use a
+  license tool such as `npx license-checker --json` or regenerate this
+  file from `package-lock.json`.
 - Keep `LICENSE` (Apache-2.0) in the project root: see [LICENSE](LICENSE).

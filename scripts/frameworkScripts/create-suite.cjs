@@ -82,11 +82,37 @@ async function main() {
 
       export const suite = {
         name: process.env.SUITE_NAME || '${name}',
-        owner: '',
-        tags: [],
-        baseURL: process.env.BASE_URL || '//define your base URL here',
-        env: {}
+        owner: '//Define your name here',
+        tags: ['end.dev'], // Define your tags here, e.g., 'env:dev' or 'dev'
+        env: {
+          credentials: {
+            // Define your credentials here
+          },
+          dev: {
+            baseURL: '//define your dev baseURL here',
+          },
+          qa: {
+            baseURL: '//define your qa baseURL here',
+          },
+          prod: {
+            baseURL: '//define your prod baseURL here',
+          },
+          preprod: {
+            baseURL: '//define your preprod baseURL here',    
+          },
+          // Add more environments as needed
+        },
       };
+
+      // runtime getter for suite.baseURL: reads based on process.env.ENV (set by run-suite.js from tags)
+      Object.defineProperty(suite, 'baseURL', {
+        get() {
+          const env = (process.env.ENV || process.env.NODE_ENV || 'dev');
+          const e = this.env && this.env[env];
+          return (e && e.baseURL) || (this.env && this.env.dev && this.env.dev.baseURL) || '//define your default baseURL here';
+        },
+        enumerable: true,
+      });
 
       export default defineConfig({
         reporters: [

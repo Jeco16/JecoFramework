@@ -1,4 +1,4 @@
-# JecoFramework - Playwright automation framework
+# JecoFramework - Enterprise Playwright Automation Platform
 
 ![Version](https://img.shields.io/github/v/release/Jeco16/JecoFramework)
 ![Playwright](https://img.shields.io/badge/Playwright-8A2BE2)
@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/license-Apache%202.0-orange)
 ![Logo](https://img.shields.io/badge/github-Jeco16/JecoFramework-blue?logo=github)
 
-JecoFramework is a Playwright-based automation framework
+JecoFramework is an enterprise Playwright-based automation framework
 designed to provide:
 
 - Suite-based execution
@@ -27,6 +27,13 @@ npm install
 
 npm run test -- --suite=suiteTemplate
 ```
+Commands for creating and deleting new suites
+
+```bash
+npm run create-suite
+
+npm run delete-suite
+```
 
 ## Features
 
@@ -34,11 +41,15 @@ npm run test -- --suite=suiteTemplate
 
 ✅ JavaScript (ES Modules)
 
+✅ Node.js
+
 ✅ Suite-based architecture
 
 ✅ Page Object Model
 
 ✅ Custom Fixtures
+
+✅ Environment management
 
 ✅ Logging
 
@@ -50,7 +61,7 @@ npm run test -- --suite=suiteTemplate
 
 ## Prerequisites
 
-- Node.js >= 18.0.0 (see `package.json` "engines")
+- Node.js >= 20.0 (see `package.json` "engines")
 - Recommended: commit `package-lock.json` for reproducible installs
 
 ## Installation
@@ -97,6 +108,8 @@ npx playwright install
 │   │
 │   └── 🟦 utils
 │       │
+│       ├── 🟩 images → Image source for the README
+│       │
 │       └── 🟩 frameworkUtils → Includes log management and configuration for ESLint/Prettier services
 │
 ├── 📁 tests
@@ -139,7 +152,7 @@ The newly downloaded framework comes with a single sample suite: **suiteTemplate
 The suite consists of two files:
 
 - **suite.config.js**
-  - Configuration file where all parameters required as input by the suite's tests are defined, such as URLs, local variables, and execution browsers.
+  - Configuration file where all parameters required as input by the suite's tests are defined, such as URLs, local variables, environment management and execution browsers.
 - **Test001_Login.spec.js**
   - An example of a simple test that performs login and logout on a web page by calling the fixture file and the template POM.
 
@@ -209,6 +222,58 @@ npm run test -- --suite=suiteName
 $env:SUITE_NAME='suiteName'; npm run test
 ```
 
+## Environment management
+
+The following environments are present in the template suite's suite.config.js file:
+
+```javascript
+ tags: ['env:dev'],
+  env: {
+    credentials: {
+      USER_1: 'standard_user',
+      USER_2: 'locked_out_user',
+      USER_3: 'problem_user',
+      USER_4: 'performance_glitch_user',
+      USER_5: 'error_user',
+      USER_6: 'visual_user',
+      PASSWORD: 'secret_sauce',
+    },
+    dev: {
+      baseURL: 'https://www.saucedemo.com/',
+    },
+    qa: {
+      baseURL: 'https://www.saucedemo.com/',
+    },
+    prod: {
+      baseURL: 'https://www.saucedemo.com/',
+    },
+    preprod: {
+      baseURL: 'https://www.saucedemo.com/',    
+    },
+  },
+```
+
+Each environment has a URL, and to let the test know which environment to run on, you'll need to specify the correct environment in the tags. 
+
+```javascript
+tags: ['env.<name>']
+```
+
+The define property method then, based on the selected environment, sets the global baseUrl parameter with the URL corresponding to the environment.
+
+```javascript
+Object.defineProperty(suite, 'baseURL', {
+  get() {
+    const env = (process.env.ENV || process.env.NODE_ENV || 'dev');
+    const e = this.env && this.env[env];
+    return (e && e.baseURL) || (this.env && this.env.dev && this.env.dev.baseURL) || 'https://www.saucedemo.com/';
+  },
+  enumerable: true,
+});
+```
+
+These mechanisms can obviously be customized as desired, in fact when a new suite is created, the suite.config.js file will have by default the structure to manage the environment configuration.
+
 ## Report
 
 This framework implements the **Playwright-report** reporting service.
@@ -223,6 +288,10 @@ The logical flow is as follows:
 3. In `playwright-report`, it checks whether the folder corresponding to the running suite exists; if not, it is created (in this case, `suiteTemplate`).
 
 4. The `index.html` file, which will contain the execution report, is created or overwritten within the suite's folder.
+
+This is an example of report:
+
+![Playwright report example](src/utils/images/report.png)
 
 ## Eslint/Prettier
 
@@ -251,15 +320,11 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.1.0
+Current version: 0.2.0
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
-
-### v0.2.0
-
-- Environment management
 
 ### v0.3.0
 
