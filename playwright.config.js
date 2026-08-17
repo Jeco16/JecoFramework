@@ -1,14 +1,14 @@
 //DEFAULT PLAYWRIGHT CONFIGURATION FILE
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  outputDir: 'artifacts',
-  testDir: 'tests',
+  outputDir: "artifacts",
+  testDir: "tests",
   use: {
-    headless: process.env.HEADLESS === 'true',
-    trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'retain-on-failure',
+    headless: process.env.HEADLESS === "true",
+    trace: "on-first-retry",
+    screenshot: "on",
+    video: "retain-on-failure",
   },
-  reporters: [['list']],
+  reporters: [["list"]],
 });

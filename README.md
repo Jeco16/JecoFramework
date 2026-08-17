@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/github/v/release/Jeco16/JecoFramework)
 ![Playwright](https://img.shields.io/badge/Playwright-8A2BE2)
 ![Node](https://img.shields.io/badge/Node.js-green)
+![CI](https://img.shields.io/badge/CI-red?logo=github)
 ![License](https://img.shields.io/badge/license-Apache%202.0-orange)
 ![Logo](https://img.shields.io/badge/github-Jeco16/JecoFramework-blue?logo=github)
 
@@ -15,6 +16,7 @@ designed to provide:
 - Logging
 - Reporting
 - Multi-environment support
+- Continuous integration
 
 Licensed under Apache 2.0.
 
@@ -45,6 +47,8 @@ npm run delete-suite
 ✅ Node.js
 
 ✅ Suite-based architecture
+
+✅ Continuous Integration Ready
 
 ✅ Page Object Model
 
@@ -88,6 +92,12 @@ npx playwright install
 ## Project Structure
 
 ```text
+│
+├── 📁 .github
+│   │
+│   └── 🟦 workflows
+│       │
+│       └── 📄ci.yml → Configuration file where the steps for CI are defined
 │
 ├──🗄️ artifacts → Folder where all run artifacts (screenshots, videos, traces) will be saved
 │
@@ -279,6 +289,36 @@ Object.defineProperty(suite, 'baseURL', {
 
 These mechanisms can obviously be customized as desired, in fact when a new suite is created, the suite.config.js file will have by default the structure to manage the environment configuration.
 
+## Continuous integration
+
+In this framework, a **CI workflow** (ci.yml) is configured that runs npm ci, installs the Playwright browsers, applies npm run lint:fix, launches the smoke tests with --grep **"[@smoke]"** in headless **(HEADLESS=true)**, and loads the playwright-report and artifacts artifacts.
+
+### CI steps
+
+```powershell
+Install dependencies
+run: npm ci
+
+Install Playwright browsers
+run: npm run install:browsers
+
+Run lint
+run: npm run lint:fix
+
+Run smoke tests
+run: 'npm run test -- --grep "\[@smoke\]"'
+```
+
+### Smoke test configuration
+
+You can add a test to the CI using the **"[@smoke]"** tag.
+It is possible to add the tag directly to the title of the test in question.
+
+```javascript
+test.describe(suite.name, () => {
+  test('[@smoke] Test template 001 - login e logout with fixture', async ({ basePage, templatePage }) => {
+```
+
 ## Report
 
 This framework implements the **Playwright-report** reporting service.
@@ -325,24 +365,37 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.2.0
+Current version: 0.3.0
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v0.3.0
-
-- GitHub Actions
-
 ### v0.4.0
-
-- Docker
-
-### v0.5.0
 
 - API layer
 
-### v1.0.0
+### v0.5.0
 
+- Update report
+
+### v0.6.0
+- Fixture hardening (fail-fast assertions on login/logout)
+- Page Object refactor (business logic moved out of fixtures)
+
+### v0.7.0
+- Test data management strategy
+- `.env.example` files and secrets handling guidelines
+
+### v0.8.0
+- Framework self-tests (unit tests for frameworkScripts)
+- Dependency security scanning in CI (npm audit)
+
+### v1.0.0
 - Stable public release
+- Full documentation pass (CONTRIBUTING, troubleshooting, multi-suite guide)
+
+### future goals
+
+- Docker integration
+- MCP integration
