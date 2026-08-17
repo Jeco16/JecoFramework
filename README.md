@@ -27,6 +27,7 @@ npm install
 
 npm run test -- --suite=suiteTemplate
 ```
+
 Commands for creating and deleting new suites
 
 ```bash
@@ -248,15 +249,15 @@ The following environments are present in the template suite's suite.config.js f
       baseURL: 'https://www.saucedemo.com/',
     },
     preprod: {
-      baseURL: 'https://www.saucedemo.com/',    
+      baseURL: 'https://www.saucedemo.com/',
     },
   },
 ```
 
-Each environment has a URL, and to let the test know which environment to run on, you'll need to specify the correct environment in the tags. 
+Each environment has a URL, and to let the test know which environment to run on, you'll need to specify the correct environment in the tags.
 
 ```javascript
-tags: ['env.<name>']
+tags: ['env.<name>'];
 ```
 
 The define property method then, based on the selected environment, sets the global baseUrl parameter with the URL corresponding to the environment.
@@ -264,9 +265,13 @@ The define property method then, based on the selected environment, sets the glo
 ```javascript
 Object.defineProperty(suite, 'baseURL', {
   get() {
-    const env = (process.env.ENV || process.env.NODE_ENV || 'dev');
+    const env = process.env.ENV || process.env.NODE_ENV || 'dev';
     const e = this.env && this.env[env];
-    return (e && e.baseURL) || (this.env && this.env.dev && this.env.dev.baseURL) || 'https://www.saucedemo.com/';
+    return (
+      (e && e.baseURL) ||
+      (this.env && this.env.dev && this.env.dev.baseURL) ||
+      'https://www.saucedemo.com/'
+    );
   },
   enumerable: true,
 });

@@ -1,5 +1,5 @@
 //DEFAULT PLAYWRIGHT CONFIGURATION FILE
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   outputDir: 'artifacts',

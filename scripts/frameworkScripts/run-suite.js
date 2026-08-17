@@ -94,7 +94,10 @@ async function main() {
         }
 
         if (acornMod) {
-          const ast = acornMod.parse(src, { ecmaVersion: 2022, sourceType: 'module' });
+          const ast = acornMod.parse(src, {
+            ecmaVersion: 2022,
+            sourceType: 'module',
+          });
           const body = ast && ast.body ? ast.body : [];
 
           const extractFromObject = (objNode) => {
@@ -143,11 +146,16 @@ async function main() {
             if (parsedWithAST) break;
           }
         } else {
-          console.warn('acorn not found; falling back to text-based suite parsing. For robust parsing install `acorn`.');
+          console.warn(
+            'acorn not found; falling back to text-based suite parsing. For robust parsing install `acorn`.'
+          );
         }
       } catch (e) {
         // any AST parsing issues fall back to text parsing below
-        console.warn('AST parsing failed, falling back to text extraction:', e && e.message ? e.message : e);
+        console.warn(
+          'AST parsing failed, falling back to text extraction:',
+          e && e.message ? e.message : e
+        );
       }
 
       // If AST parsing didn't yield results, fall back to the legacy text extraction
@@ -176,14 +184,14 @@ async function main() {
         const searchArea = suiteBlock || src;
 
         // detect suite name without importing (search only in suiteBlock)
-        const nameMatch = searchArea.match(/\bname\s*:\s*(['\"])([^'\"]+)\1/);
+        const nameMatch = searchArea.match(/\bname\s*:\s*(['"])([^'"]+)\1/);
         if (nameMatch) suiteName = nameMatch[2];
 
         // detect tags array content (search only in suiteBlock)
         const tagsMatch = searchArea.match(/\btags\s*:\s*\[([^\]]*)\]/m);
         if (tagsMatch) {
           const inside = tagsMatch[1];
-          const tagStrings = inside.match(/(['\"])(.*?)\1/g);
+          const tagStrings = inside.match(/(['"])(.*?)\1/g);
           if (tagStrings) detectedTags = tagStrings.map((s) => s.slice(1, -1));
         }
       }
@@ -342,7 +350,9 @@ async function main() {
           }
           try {
             fs.rmSync(backupRoot, { recursive: true, force: true });
-          } catch (e) {}
+          } catch (e) {
+            /* ignore */
+          }
         }
       } catch (e) {
         /* ignore restore errors */

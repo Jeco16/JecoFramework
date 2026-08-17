@@ -31,7 +31,7 @@ export const suite = {
       baseURL: 'https://www.saucedemo.com/',
     },
     preprod: {
-      baseURL: 'https://www.saucedemo.com/',    
+      baseURL: 'https://www.saucedemo.com/',
     },
   },
 };
@@ -39,9 +39,13 @@ export const suite = {
 // runtime getter for suite.baseURL: reads based on process.env.ENV (set by run-suite.js from tags)
 Object.defineProperty(suite, 'baseURL', {
   get() {
-    const env = (process.env.ENV || process.env.NODE_ENV || 'dev');
+    const env = process.env.ENV || process.env.NODE_ENV || 'dev';
     const e = this.env && this.env[env];
-    return (e && e.baseURL) || (this.env && this.env.dev && this.env.dev.baseURL) || 'https://www.saucedemo.com/';
+    return (
+      (e && e.baseURL) ||
+      (this.env && this.env.dev && this.env.dev.baseURL) ||
+      'https://www.saucedemo.com/'
+    );
   },
   enumerable: true,
 });

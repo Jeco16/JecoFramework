@@ -68,7 +68,7 @@ function copyDirSync(src, dst) {
   }
 }
 
-function preserveAttachmentsAndRemove(runPath, suiteDir, runName) {
+function preserveAttachmentsAndRemove(runPath, suiteDir) {
   try {
     // copy attachments directory (if present) into suiteDir/attachments
     // (placed directly under suiteDir so relative paths in index.html remain valid)
@@ -100,7 +100,9 @@ function preserveAttachmentsAndRemove(runPath, suiteDir, runName) {
     console.warn('Failed to preserve attachments for', runPath, e);
     try {
       fs.rmSync(runPath, { recursive: true, force: true });
-    } catch (er) {}
+    } catch (er) {
+      console.warn('Failed removing run folder', runPath, er);
+    }
   }
 }
 
@@ -200,7 +202,9 @@ for (const r of runs) {
           );
           try {
             preserveAttachmentsAndRemove(targetRunPath, path.join(root, c), r);
-          } catch (e) {}
+          } catch (e) {
+            console.warn('Failed preserving attachments and removing run folder', targetRunPath, e);
+          }
         }
         console.log(
           `Detected suite '${c}' in ${r}; moved index.html into playwright-report/${c} and removed ${r}`
@@ -220,7 +224,9 @@ for (const r of runs) {
         );
         try {
           preserveAttachmentsAndRemove(targetRunPath, path.join(root, candidates[0]), r);
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Failed preserving attachments and removing run folder', targetRunPath, e);
+        }
       }
       console.log(
         `Single candidate '${candidates[0]}' used for ${r}; moved into playwright-report/${candidates[0]}`
@@ -236,14 +242,18 @@ for (const r of runs) {
         console.log('Removing run folder (fallback):', targetRunPath);
         fs.rmSync(targetRunPath, { recursive: true, force: true });
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Failed removing run folder (fallback)', e);
+    }
     try {
       const targetRunPath = path.join(root, r);
       if (r.startsWith('run-')) {
         console.log('Preserving attachments then removing run folder (fallback):', targetRunPath);
         preserveAttachmentsAndRemove(targetRunPath, path.join(root, fallback), r);
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Failed preserving attachments and removing run folder (fallback)', e);
+    }
     console.log(
       `Could not detect suite for ${r}; moved index.html into playwright-report/${fallback}`
     );
