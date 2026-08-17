@@ -34,9 +34,10 @@ jobs:
         run: npm run lint:fix
 
       - name: Run smoke tests
-        run: 'npm run test -- --grep "\[@smoke\]"'
+        run: 'npm run test -- --grep "\[smoke\]"'
         env:
           CI: true
+          HEADLESS: 'true'
 
       - name: Upload Playwright report
         if: always()
