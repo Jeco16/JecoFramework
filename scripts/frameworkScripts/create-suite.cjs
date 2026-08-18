@@ -35,7 +35,7 @@ async function main() {
       process.exit(1);
     }
 
-    const base = path.resolve(process.cwd(), 'tests', 'e2e');
+    const base = path.resolve(process.cwd(), 'tests', 'suites');
     const src = path.join(base, defaultTemplate);
     const dest = path.join(base, name);
 

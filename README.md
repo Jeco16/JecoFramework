@@ -181,7 +181,7 @@ npm run create-suite
 New suite name: suite01
 ```
 
-A new suite folder will be created at the path **tests/e2e/suite01**.
+A new suite folder will be created at the path **tests/suites/suite01**.
 
 The new suite will contain the following files:
 
@@ -208,7 +208,7 @@ Name of the suite to delete: suite01
 Confirm irreversible deletion of "suite01"? Type "yes" to confirm: yes
 
 # Step 3
-Suite removed: C:\JecoFramework\tests\e2e\suite01
+Suite removed: C:\JecoFramework\tests\suites\suite01
 No related report found in playwright-report for this suite.
 ```
 
@@ -380,18 +380,22 @@ For more information, consult the **CHANGELOG.md** file.
 - Update report
 
 ### v0.6.0
+
 - Fixture hardening (fail-fast assertions on login/logout)
 - Page Object refactor (business logic moved out of fixtures)
 
 ### v0.7.0
+
 - Test data management strategy
 - `.env.example` files and secrets handling guidelines
 
 ### v0.8.0
+
 - Framework self-tests (unit tests for frameworkScripts)
 - Dependency security scanning in CI (npm audit)
 
 ### v1.0.0
+
 - Stable public release
 - Full documentation pass (CONTRIBUTING, troubleshooting, multi-suite guide)
 

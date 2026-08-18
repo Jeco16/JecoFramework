@@ -39,7 +39,7 @@ async function removeIfExists(target) {
       process.exit(1);
     }
 
-    const suiteDir = path.resolve(process.cwd(), 'tests', 'e2e', name);
+    const suiteDir = path.resolve(process.cwd(), 'tests', 'suites', name);
     const reportDir = path.resolve(process.cwd(), 'playwright-report', name);
 
     if (!fs.existsSync(suiteDir)) {
