@@ -1,6 +1,6 @@
 {
   "name": "JecoFramework",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
@@ -9,17 +9,16 @@
   },
   "scripts": {
     "pretest": "node -e \"require('fs').mkdirSync('./playwright-report',{recursive:true}); require('fs').mkdirSync('./artifacts',{recursive:true});\"",
-    "test": "node ./scripts/frameworkScripts/run-suite.js",
-    "run-suite": "node ./scripts/frameworkScripts/run-suite.js",
-    "show-report": "node ./scripts/frameworkScripts/show-report.js",
+    "test": "npx playwright test",
+    "test:e2e": "npx playwright test --project=e2e",
+    "test:api": "npx playwright test --project=api",
     "test:headed": "npx playwright test --headed",
     "test:debug": "cross-env PWDEBUG=1 npx playwright test",
+    "show-report": "npx playwright show-report",
     "install:browsers": "npx playwright install",
-    "create-suite": "node scripts/frameworkScripts/create-suite.cjs",
-    "delete-suite": "node scripts/frameworkScripts/delete-suite.cjs",
-    "lint": "eslint -c src/utils/frameworkUtils/.eslintrc.cjs . --ext .js",
-    "lint:fix": "eslint -c src/utils/frameworkUtils/.eslintrc.cjs . --ext .js --fix",
-    "format": "prettier --config src/utils/frameworkUtils/.prettierrc --write \"**/*.{js,json,md}\""
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write \"**/*.{js,json,md}\""
   },
   "devDependencies": {
     "@playwright/test": "^1.38.0",

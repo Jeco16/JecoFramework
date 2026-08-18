@@ -1,4 +1,4 @@
-# JecoFramework - Enterprise Playwright Automation Platform
+# JecoFramework - Enterprise Playwright Automation Framework
 
 ![Version](https://img.shields.io/github/v/release/Jeco16/JecoFramework)
 ![Playwright](https://img.shields.io/badge/Playwright-8A2BE2)
@@ -10,7 +10,7 @@
 JecoFramework is an enterprise Playwright-based automation framework
 designed to provide:
 
-- Suite-based execution
+- Project-based execution (native Playwright `projects`: `e2e`, `api`)
 - Page Object Model
 - Fixtures
 - Logging
@@ -27,15 +27,20 @@ git clone https://github.com/Jeco16/JecoFramework
 
 npm install
 
-npm run test -- --suite=suiteTemplate
+npm run test
 ```
 
-Commands for creating and deleting new suites
+Run a single project (e2e or api):
 
 ```bash
-npm run create-suite
+npm run test:e2e
+npm run test:api
+```
 
-npm run delete-suite
+Run a single test:
+
+```bash
+npm run test:api -- -g "API_01"
 ```
 
 ## Features
@@ -46,7 +51,7 @@ npm run delete-suite
 
 ✅ Node.js
 
-✅ Suite-based architecture
+✅ Native Playwright projects (e2e/api)
 
 ✅ Continuous Integration Ready
 
@@ -93,11 +98,9 @@ npx playwright install
 
 ```text
 │
-├── 📁 .github
+├── 📁 .github/workflows
 │   │
-│   └── 🟦 workflows
-│       │
-│       └── 📄ci.yml → Configuration file where the steps for CI are defined
+│   └── 📄ci.yml → Configuration file where the steps for CI are defined
 │
 ├──🗄️ artifacts → Folder where all run artifacts (screenshots, videos, traces) will be saved
 │
@@ -105,37 +108,39 @@ npx playwright install
 │
 ├──🗄️ playwright-report → Folder where the HTML execution reports will be saved
 │
-├── 📁 scripts
-│   │
-│   └── 🟦 frameworkScripts → Scripts that handle the framework's core functionalities
-│
 ├── 📁 src
+│   │
+│   ├── 🟦 api
+│   │   │
+│   │   ├── 📄 api.client.js → HTTP transport layer
+│   │   │
+│   │   └── 📄 api.assertions.js → Domain assertions for API responses
+│   │
+│   ├── 🟦 assertions/ 📄 fail.assertions.js → Management of assertions
+│   │
+│   ├── 🟦 config/ 📄 env.config.js → Environment-specific base URLs and credentials
 │   │
 │   ├── 🟦 pages
 │   │   │
-│   │   ├── 🟩 frameworkPages → It Contains the generic POM for the framework's core functionalities
+│   │   ├── 📄 base.page.js → Generic POM base class
 │   │   │
-│   │   └── 🟩 templatePages → It contains the pages for managing the template suite's POM
+│   │   └── 📄 login.page.js → Example page object
 │   │
 │   └── 🟦 utils
 │       │
 │       ├── 🟩 images → Image source for the README
 │       │
-│       └── 🟩 frameworkUtils → Includes log management and configuration for ESLint/Prettier services
+│       └── 📄 logger.js → Log management
 │
 ├── 📁 tests
 │   │
-│   ├── 🟦 e2e
-│   │   │
-│   │   └── 🟩 suiteTemplate → Sample suite
-│   │       │
-│   │       ├── 📄 Test001_Login.spec.js → Sample automated test
-│   │       │
-│   │       └── 📄 suite.config.js → Example of a configuration file for the suite
+│   ├── 🟦 e2e/ 📄 login.spec.js → Sample automated E2E test
 │   │
-│   └── 🟦 fixtures
-│       │
-│       └── 📄 fixtures.js → Generic fixture file defining the functionalities to be called in the test scripts
+│   ├── 🟦 api/ 📄 booking.spec.js → Sample automated API test
+│   │
+│   └── 🟦 fixtures/ 📄 fixtures.js → Generic fixture file
+│
+├── 📄 .eslintrc.cjs / .eslintignore / .prettierrc / .prettierignore → Lint/format config
 │
 ├── 📄 .gitignore
 │
@@ -149,149 +154,68 @@ npx playwright install
 │
 ├── 📄 package.json
 │
-├── 📄 playwright.config.js
+├── 📄 playwright.config.js → Single source of truth: `projects` for `e2e` and `api`
 │
 └── 📄 README.md
 ```
 
-## Suites and tests
+## Tests
 
-### Suites
+The framework comes with two native Playwright `projects`:
 
-The newly downloaded framework comes with a single sample suite: **suiteTemplate**.
+- **e2e** (`tests/e2e/**`) — browser-based tests using the Page Object Model.
+- **api** (`tests/api/**`) — HTTP tests using the `api` fixture (see `src/api/api.client.js`).
 
-The suite consists of two files:
+Each test file is a plain Playwright spec — create new ones simply by adding a `*.spec.js` file under `tests/e2e/` or `tests/api/`, no scaffolding step required.
 
-- **suite.config.js**
-  - Configuration file where all parameters required as input by the suite's tests are defined, such as URLs, local variables, environment management and execution browsers.
-- **Test001_Login.spec.js**
-  - An example of a simple test that performs login and logout on a web page by calling the fixture file and the template POM.
-
-### Creation of a new suite
-
-1. Run the following command
-
-```bash
-npm run create-suite
-```
-
-2. Select the suite name (If the entered name corresponds to an existing suite, you will be asked whether or not to overwrite it)
-
-```powershell
-New suite name: suite01
-```
-
-A new suite folder will be created at the path **tests/suites/suite01**.
-
-The new suite will contain the following files:
-
-- **suite.config.js**
-  - Default configuration file with fields to be filled in
-- **TestTemplate001.spec.js**
-  - Sample test file to configure
-
-### Cancellation of a suite
-
-1. Run the following command:
-
-```bash
-npm run delete-suite
-```
-
-2. Select the suite to delete.
-
-```powershell
-# Step 1
-Name of the suite to delete: suite01
-
-# Step 2
-Confirm irreversible deletion of "suite01"? Type "yes" to confirm: yes
-
-# Step 3
-Suite removed: C:\JecoFramework\tests\suites\suite01
-No related report found in playwright-report for this suite.
-```
-
-Upon deletion, the suite folder and the reports folder (if present) will be removed.
-
-### Tests
-
-1. Run tests
+1. Run all tests
 
 ```bash
 npm run test
 npm run test:headed
 ```
 
-2. Run a single suite
+2. Run a single project
 
-```powershell
-# run by suite name
-npm run test -- --suite=suiteName
+```bash
+npm run test:e2e
+npm run test:api
+```
 
-# or set env var for the session
-$env:SUITE_NAME='suiteName'; npm run test
+3. Filter by tag (e.g. smoke tests) or project, using Playwright's native CLI flags
+
+```bash
+npm run test -- --grep "\@smoke\"
+npm run test -- --project=api
 ```
 
 ## Environment management
 
-The following environments are present in the template suite's suite.config.js file:
+Environments and credentials are centralized in `src/config/env.config.js`:
 
 ```javascript
- tags: ['env:dev'],
-  env: {
-    credentials: {
-      USER_1: 'standard_user',
-      USER_2: 'locked_out_user',
-      USER_3: 'problem_user',
-      USER_4: 'performance_glitch_user',
-      USER_5: 'error_user',
-      USER_6: 'visual_user',
-      PASSWORD: 'secret_sauce',
-    },
-    dev: {
-      baseURL: 'https://www.saucedemo.com/',
-    },
-    qa: {
-      baseURL: 'https://www.saucedemo.com/',
-    },
-    prod: {
-      baseURL: 'https://www.saucedemo.com/',
-    },
-    preprod: {
-      baseURL: 'https://www.saucedemo.com/',
-    },
+const environments = {
+  dev: {
+    baseURL: 'https://www.saucedemo.com/',
+    apiURL: 'https://restful-booker.herokuapp.com/',
   },
+  qa: {/* ... */},
+  prod: {/* ... */},
+  preprod: {/* ... */},
+};
 ```
 
-Each environment has a URL, and to let the test know which environment to run on, you'll need to specify the correct environment in the tags.
+The active environment is selected via the `ENV` environment variable (default: `dev`):
 
-```javascript
-tags: ['env.<name>'];
+```powershell
+$env:ENV='qa'; npm run test
 ```
 
-The define property method then, based on the selected environment, sets the global baseUrl parameter with the URL corresponding to the environment.
-
-```javascript
-Object.defineProperty(suite, 'baseURL', {
-  get() {
-    const env = process.env.ENV || process.env.NODE_ENV || 'dev';
-    const e = this.env && this.env[env];
-    return (
-      (e && e.baseURL) ||
-      (this.env && this.env.dev && this.env.dev.baseURL) ||
-      'https://www.saucedemo.com/'
-    );
-  },
-  enumerable: true,
-});
-```
-
-These mechanisms can obviously be customized as desired, in fact when a new suite is created, the suite.config.js file will have by default the structure to manage the environment configuration.
+`env.baseURL`, `env.apiURL` and `env.credentials` are then imported directly in test files (see `tests/e2e/login.spec.js` and `tests/api/booking.spec.js`) — no tag parsing or per-suite config file needed.
 
 ## Continuous integration
 
-In this framework, a **CI workflow** (ci.yml) is configured that runs npm ci, installs the Playwright browsers, applies npm run lint:fix, launches the smoke tests with --grep **"[@smoke]"** in headless **(HEADLESS=true)**, and loads the playwright-report and artifacts artifacts.
+In this framework, a **CI workflow** (ci.yml) is configured that runs npm ci, installs the Playwright browsers, applies npm run lint:fix, launches the smoke tests with --grep **"@smoke"** in headless **(HEADLESS=true)**, and loads the playwright-report and artifacts artifacts.
 
 ### CI steps
 
@@ -306,33 +230,22 @@ Run lint
 run: npm run lint:fix
 
 Run smoke tests
-run: 'npm run test -- --grep "\[@smoke\]"'
+run: 'npm run test -- --grep "\@smoke\"'
 ```
 
 ### Smoke test configuration
 
-You can add a test to the CI using the **"[@smoke]"** tag.
+You can add a test to the CI using the **"@smoke"** tag.
 It is possible to add the tag directly to the title of the test in question.
 
 ```javascript
-test.describe(suite.name, () => {
-  test('[@smoke] Test template 001 - login e logout with fixture', async ({ basePage, templatePage }) => {
+test.describe('Saucedemo - E2E', () => {
+  test('@smoke login e logout con fixture', async ({ basePage, loginPage }) => {
 ```
 
 ## Report
 
-This framework implements the **Playwright-report** reporting service.
-When a test is launched, the scripts located in **scripts\frameworkScripts** are activated.
-
-The logical flow is as follows:
-
-1. Execution of test 001 of the template suite
-
-2. Check if the `playwright-report` folder exists; otherwise, it is created.
-
-3. In `playwright-report`, it checks whether the folder corresponding to the running suite exists; if not, it is created (in this case, `suiteTemplate`).
-
-4. The `index.html` file, which will contain the execution report, is created or overwritten within the suite's folder.
+This framework implements the **Playwright-report** reporting service natively: `playwright.config.js` configures the `html` reporter with a single `outputFolder: 'playwright-report'`, no post-run manipulation of the report files is required.
 
 This is an example of report:
 
@@ -365,33 +278,26 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.3.0
+Current version: 0.5.0
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v0.4.0
-
-- API layer
-
-### v0.5.0
-
-- Update report
-
 ### v0.6.0
 
-- Fixture hardening (fail-fast assertions on login/logout)
-- Page Object refactor (business logic moved out of fixtures)
+- Update report
+- Test-data management
 
 ### v0.7.0
 
-- Test data management strategy
 - `.env.example` files and secrets handling guidelines
+- Framework self-tests
 
 ### v0.8.0
 
-- Framework self-tests (unit tests for frameworkScripts)
+- Automatic release processes
+- Automatic Changelog.md
 - Dependency security scanning in CI (npm audit)
 
 ### v1.0.0

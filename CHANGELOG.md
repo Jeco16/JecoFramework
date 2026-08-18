@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0] - 2026/08/18
+
+### Added
+
+- API Layer
+- Fail's assertions
+- Native Playwright project management
+
+### Upgraded
+
+- Framework tree structure
+- Logical structure of the tests
+- Page Object refactor
+
+### Removed
+
+- Script for managing suite runs
+- Script for creating and deleting suites
+- Report management script
+
 ## [0.3.0] - 2026/08/17
 
 ### Added
