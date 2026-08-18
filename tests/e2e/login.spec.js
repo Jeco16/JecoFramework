@@ -7,9 +7,9 @@ import { env } from '../../src/config/env.config.js';
 import { test } from '../fixtures/fixtures.js';
 
 test.describe('Saucedemo - E2E', () => {
-  test('@smoke E2E_01 - login e logout con fixture', async ({ basePage, loginPage }) => {
+  test('@smoke E2E_01 - login e logout con fixture', async ({ basePage, loginPage, testData }) => {
     await basePage.open(env.baseURL, /Swag Labs/);
-    await loginPage.login(env.credentials.USER_1, env.credentials.PASSWORD);
+    await loginPage.login(testData.username, testData.password);
     await loginPage.logout();
   });
 });

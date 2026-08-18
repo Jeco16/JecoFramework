@@ -7,39 +7,32 @@ import { env } from '../../src/config/env.config.js';
 import { test } from '../fixtures/fixtures.js';
 
 test.describe('Restful Booker - API', () => {
-  test('@smoke API_01 - Example login flow [METHOD POST]', async ({ api }) => {
+  test('@smoke API_01 - Example login flow [METHOD POST]', async ({ api, testData }) => {
     const credentials = {
-      username: env.credentials.API_USER_1,
-      password: env.credentials.API_PASSWORD,
+      username: testData.username,
+      password: testData.password,
     };
     const loginRes = await api.post(`${env.apiURL}auth`, credentials);
-    api.verifyStatus(loginRes, 200);
-    api.verifyFieldExists(loginRes, 'token');
+    api.verifyStatus(loginRes, testData.expectedStatus);
+    api.verifyFieldExists(loginRes, testData.expectedField);
   });
 
-  test(' API_02 - Example of get bookings [METHOD GET]', async ({ api }) => {
+  test(' API_02 - Example of get bookings [METHOD GET]', async ({ api, testData }) => {
     const res = await api.get(`${env.apiURL}booking`);
-    api.verifyStatusInRange(res, 200, 299);
+    api.verifyStatusInRange(res, testData.minRange, testData.maxRange);
   });
 
-  test(' API_03 - Example of get booking with specific ID [METHOD GET]', async ({ api }) => {
+  test(' API_03 - Example of get booking with specific ID [METHOD GET]', async ({
+    api,
+    testData,
+  }) => {
     const res = await api.get(`${env.apiURL}booking/1`);
-    api.verifyStatusInRange(res, 200, 299);
+    api.verifyStatusInRange(res, testData.minRange, testData.maxRange);
   });
 
-  test(' API_04 - Example of creation of new booking [METHOD POST]', async ({ api }) => {
-    const newBooking = {
-      firstname: 'John',
-      lastname: 'Doe',
-      totalprice: 123,
-      depositpaid: true,
-      bookingdates: {
-        checkin: '2024-01-01',
-        checkout: '2024-01-10',
-      },
-      additionalneeds: 'Breakfast',
-    };
+  test(' API_04 - Example of creation of new booking [METHOD POST]', async ({ api, testData }) => {
+    const newBooking = testData.requestBody;
     const res = await api.post(`${env.apiURL}booking`, newBooking);
-    api.verifyStatusInRange(res, 200, 299);
+    api.verifyStatusInRange(res, testData.minRange, testData.maxRange);
   });
 });

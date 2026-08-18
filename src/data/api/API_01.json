@@ -1,0 +1,6 @@
+{
+  "username": "admin",
+  "password": "password123",
+  "expectedStatus": 200,
+  "expectedField": "token"
+}

@@ -4,17 +4,8 @@ Licensed under the Apache License, Version 2.0
 You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 */
 
-// Environment-specific configuration (base URLs, credentials).
+// Environment-specific configuration (base URLs).
 // Select the active environment via `ENV=<name>` (default: 'dev').
-
-const credentials = {
-  // Define additional credentials as needed for your application
-  USER_1: 'standard_user',
-  API_USER_1: 'admin',
-  API_PASSWORD: 'password123',
-  PASSWORD: 'secret_sauce',
-};
-
 const environments = {
   // Define additional environments as needed for your application
   dev: {
@@ -40,7 +31,6 @@ function currentEnvName() {
 }
 
 export const env = {
-  credentials,
   get name() {
     return currentEnvName();
   },

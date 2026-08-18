@@ -13,6 +13,7 @@ import {
   verifyStatusInRange,
   verifyFieldExists,
 } from '../../src/api/api.assertions.js';
+import { loadByTestId } from '../../src/data/loader.js';
 
 export const test = base.extend({
   // Base fixture for the base page -------------
@@ -26,6 +27,16 @@ export const test = base.extend({
     };
 
     await use(basePageInstance);
+  },
+
+  testData: async ({ page: _page }, use, testInfo) => {
+    void _page;
+    const title = testInfo.title;
+    const match = title.match(/([A-Z0-9]+_\d+)/i);
+    const testId = match ? match[1] : null;
+    logger.info(`testData loader: title="${title}", testId=${testId}`);
+    const data = await loadByTestId(testId);
+    await use(data);
   },
 
   // API fixture -------------------------------

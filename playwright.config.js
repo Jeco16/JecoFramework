@@ -1,3 +1,9 @@
+/*
+Copyright 2026 Jacopo Enrico Marinaccio
+Licensed under the Apache License, Version 2.0
+You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+*/
+
 // Single source of truth for Playwright configuration.
 // Environments are selected via `ENV=<name>` (see src/config/env.config.js); browser/test-type
 // separation is handled natively via `projects`, no custom suite runner required.
@@ -25,5 +31,6 @@ export default defineConfig({
       testDir: 'tests/api',
       use: {},
     },
+    // Additional projects can be defined here for different browsers, devices, or test types.
   ],
 });

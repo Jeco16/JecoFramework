@@ -1,0 +1,15 @@
+{
+  "minRange": 200,
+  "maxRange": 299,
+  "requestBody": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": 150,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2023-01-01",
+      "checkout": "2023-01-10"
+    },
+    "additionalneeds": "Breakfast"
+  }
+}
