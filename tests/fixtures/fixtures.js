@@ -13,7 +13,9 @@ import {
   verifyStatusInRange,
   verifyFieldExists,
 } from '../../src/api/api.assertions.js';
-import { loadByTestId } from '../../src/data/loader.js';
+import { loadByTestId, findFilePathByTestId } from '../../src/data/loader.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 export const test = base.extend({
   // Base fixture for the base page -------------
@@ -36,6 +38,26 @@ export const test = base.extend({
     const testId = match ? match[1] : null;
     logger.info(`testData loader: title="${title}", testId=${testId}`);
     const data = await loadByTestId(testId);
+    // Add annotations so the Playwright HTML reporter shows testId and data file
+    const source = await findFilePathByTestId(testId);
+    try {
+      testInfo.annotations = testInfo.annotations || [];
+      if (testId) testInfo.annotations.push({ type: 'testId', description: String(testId) });
+      if (source) testInfo.annotations.push({ type: 'dataFile', description: source });
+
+      // Attach per-test metadata so Playwright will include it in report/data
+      try {
+        const meta = { title, testId, dataFile: source, keys: Object.keys(data) };
+        await testInfo.attach('test-metadata', {
+          body: Buffer.from(JSON.stringify(meta)),
+          contentType: 'application/json',
+        });
+      } catch (e) {
+        // ignore attach errors
+      }
+    } catch (e) {
+      // ignore annotation errors
+    }
     await use(data);
   },
 

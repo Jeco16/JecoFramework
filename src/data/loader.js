@@ -52,4 +52,16 @@ export async function loadByTestId(testId) {
   return {};
 }
 
+export async function findFilePathByTestId(testId) {
+  if (!testId) return null;
+  const filename = `${testId}.json`;
+  const direct = path.join(DATA_DIR, filename);
+  if (await exists(direct)) return direct;
+  const found = await findFileRecursive(DATA_DIR, filename);
+  if (found) return found;
+  const alt = path.join(DATA_DIR, testId, 'data.json');
+  if (await exists(alt)) return alt;
+  return null;
+}
+
 export default { loadByTestId };
