@@ -1,4 +1,2 @@
 node_modules
-playwright-report/
-artifacts/
-test-results/
+report/

@@ -20,6 +20,24 @@ designed to provide:
 
 Licensed under Apache 2.0.
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Tests](#tests)
+- [Environment management](#environment-management)
+- [Continuous integration](#continuous-integration)
+  - [CI steps](#ci-steps)
+  - [Smoke test configuration](#smoke-test-configuration)
+- [Report](#report)
+- [Element highlighting](#element-highlighting)
+- [Eslint/Prettier](#eslintprettier)
+- [Version](#version)
+- [Roadmap](#roadmap)
+
 ## Quick Start
 
 ```bash
@@ -63,7 +81,11 @@ npm run test:api -- -g "API_01"
 
 ✅ Logging
 
-✅ HTML Reporting with Playwright-Report
+✅ Custom standalone HTML Reporting
+
+✅ Per-test data management
+
+✅ Element highlighting during interactions
 
 ✅ Apache 2.0 License
 
@@ -102,11 +124,9 @@ npx playwright install
 │   │
 │   └── 📄ci.yml → Configuration file where the steps for CI are defined
 │
-├──🗄️ artifacts → Folder where all run artifacts (screenshots, videos, traces) will be saved
-│
 ├──🗄️ node_modules → Node file installation folder
 │
-├──🗄️ playwright-report → Folder where the HTML execution reports will be saved
+├──🗄️ report → Custom standalone HTML report (regenerated on every run, git-ignored)
 │
 ├── 📁 src
 │   │
@@ -120,11 +140,21 @@ npx playwright install
 │   │
 │   ├── 🟦 config/ 📄 env.config.js → Environment-specific base URLs and credentials
 │   │
+│   ├── 🟦 data
+│   │   │
+│   │   ├── 📄 loader.js → Locates and loads per-test JSON data files by testId
+│   │   │
+│   │   ├── 🟩 e2e/ → Per-test JSON data files for e2e tests (e.g. E2E_01.json)
+│   │   │
+│   │   └── 🟩 api/ → Per-test JSON data files for api tests (e.g. API_01.json)
+│   │
 │   ├── 🟦 pages
 │   │   │
-│   │   ├── 📄 base.page.js → Generic POM base class
+│   │   ├── 📄 base.page.js → Generic POM base class (incl. `highlight`/`highlightAndClick`/`highlightAndFill`)
 │   │   │
 │   │   └── 📄 login.page.js → Example page object
+│   │
+│   ├── 🟦 reporters/ 📄 customizeReport.reporter.js → Custom Playwright reporter generating the standalone HTML report
 │   │
 │   └── 🟦 utils
 │       │
@@ -138,7 +168,7 @@ npx playwright install
 │   │
 │   ├── 🟦 api/ 📄 booking.spec.js → Sample automated API test
 │   │
-│   └── 🟦 fixtures/ 📄 fixtures.js → Generic fixture file
+│   └── 🟦 fixtures/ 📄 fixtures.js → Generic fixture file (page objects, api client, per-test data loading + metadata)
 │
 ├── 📄 .eslintrc.cjs / .eslintignore / .prettierrc / .prettierignore → Lint/format config
 │
@@ -245,11 +275,30 @@ test.describe('Saucedemo - E2E', () => {
 
 ## Report
 
-This framework implements the **Playwright-report** reporting service natively: `playwright.config.js` configures the `html` reporter with a single `outputFolder: 'playwright-report'`, no post-run manipulation of the report files is required.
+This framework generates a **custom standalone HTML report** (`src/reporters/customizeReport.reporter.js`), configured in `playwright.config.js` alongside the `list` reporter — no dependency on Playwright's built-in `html` reporter.
 
-This is an example of report:
+On every run:
 
-![Playwright report example](src/utils/images/report.png)
+- `report/data/` is wiped and recreated (`onBegin`), so stale metadata from previous runs never leaks in.
+- The `testData` fixture (see `tests/fixtures/fixtures.js`) writes a per-test metadata file (`testId`, `dataFile`, `keys`, `status`, `startTime`, `duration`) into `report/data/` after each test.
+- At the end of the run (`onEnd`), the reporter aggregates that metadata, keeps only tests that actually ran, and writes a single self-contained `report/index.html` with:
+  - A title showing the run date and time (`Report of dd/mm/yyyy HH:mm`).
+  - A pie chart (Passed / Failed / Skipped) with legend.
+  - A list of executed tests with **bold, color-coded status** (green = passed, red = failed, yellow = skipped) plus start time and duration.
+  - Expandable step details per test, also bold/color-coded by status.
+- The report embeds its own CSS/logo (no external assets required) and is regenerated from scratch on every run — the `report/` folder is git-ignored.
+
+## Element highlighting
+
+`BasePage` (`src/pages/base.page.js`) exposes helpers to visually highlight the element being interacted with while tests run (useful in headed/debug mode):
+
+```javascript
+await this.highlight(selector); // outline/box-shadow flash on the element
+await this.highlightAndClick(selector); // highlight, then click
+await this.highlightAndFill(selector, value); // highlight, then fill
+```
+
+`LoginPage` uses these wrappers for all its interactions.
 
 ## Eslint/Prettier
 
@@ -278,21 +327,17 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.5.0
+Current version: 0.6.0
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v0.6.0
-
-- Update report
-- Test-data management
-
 ### v0.7.0
 
 - `.env.example` files and secrets handling guidelines
 - Framework self-tests
+- Attachment linking (screenshots/videos of failed tests) in the custom report
 
 ### v0.8.0
 

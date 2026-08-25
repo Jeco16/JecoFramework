@@ -23,11 +23,7 @@ export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,
   // Add custom reporter module to customize HTML report without external scripts.
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['./src/reporters/customizeReport.reporter.js'],
-  ],
+  reporter: [['list'], ['./src/reporters/customizeReport.reporter.js']],
   use: {
     headless: process.env.HEADLESS === 'true',
     trace: 'on-first-retry',

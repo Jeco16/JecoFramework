@@ -1,6 +1,23 @@
 # Changelog
 
-## AGGIUNGERE TEST MANAGEMENT
+## [0.6.0] - 2026/08/25
+
+### Added
+
+- Per-test data management: `src/data/loader.js` loads JSON fixtures by `testId` from `src/data/e2e/*.json` and `src/data/api/*.json`; wired into the `testData` fixture.
+- Custom standalone HTML report (`src/reporters/customizeReport.reporter.js`), replacing the built-in Playwright `html` reporter:
+  - Fresh `report/data/` on every run (`onBegin`).
+  - Aggregates per-test metadata written by the `testData` fixture.
+  - Filters out tests that did not run.
+  - Run title with date and time (`dd/mm/yyyy HH:mm`).
+  - Inline pie chart (Passed/Failed/Skipped) with legend, no "other" category.
+  - Test list and expandable step details with **bold, color-coded status** (green/red/yellow).
+  - Inlined CSS and logo, no external dependencies.
+- Element highlighting during interactions: `BasePage.highlight()`, `highlightAndClick()`, `highlightAndFill()`; adopted by `LoginPage`.
+
+### Changed
+
+- `playwright.config.js`: removed the built-in `html` reporter in favor of the custom reporter; `report/` output is git-ignored.
 
 ## [0.5.0] - 2026/08/18
 

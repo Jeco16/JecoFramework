@@ -59,6 +59,25 @@ export const test = base.extend({
       // ignore annotation errors
     }
     await use(data);
+
+    // After the test, write a per-test metadata file into report/data
+    try {
+      const finalMeta = {
+        title,
+        testId,
+        dataFile: source || '',
+        keys: Object.keys(data || {}),
+        status: testInfo.status || '',
+        startTime: testInfo.startTime ? new Date(testInfo.startTime).toISOString() : null,
+        duration: typeof testInfo.duration !== 'undefined' ? testInfo.duration : null,
+      };
+      const outDir = path.resolve(process.cwd(), 'report', 'data');
+      await fs.mkdir(outDir, { recursive: true });
+      const outPath = path.join(outDir, `${testId || 'unknown'}-${Date.now()}.json`);
+      await fs.writeFile(outPath, JSON.stringify(finalMeta), 'utf8');
+    } catch (e) {
+      // ignore write errors
+    }
   },
 
   // API fixture -------------------------------

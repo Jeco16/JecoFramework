@@ -20,9 +20,9 @@ export class LoginPage extends BasePage {
 
   async login(username, password) {
     logger.info(`Attempting to login with username: ${username}`);
-    await this.fill(this.userInput, username);
-    await this.fill(this.passwordInput, password);
-    await this.click(this.loginButton);
+    await this.highlightAndFill(this.userInput, username);
+    await this.highlightAndFill(this.passwordInput, password);
+    await this.highlightAndClick(this.loginButton);
     if (await this.isVisible(this.inventoryList)) {
       logger.pass(`Login successful for username: ${username}`);
     } else {
@@ -32,8 +32,8 @@ export class LoginPage extends BasePage {
 
   async logout() {
     logger.info(`Attempting to logout`);
-    await this.click(this.clickMenuButton);
-    await this.click(this.clickLogoutButton);
+    await this.highlightAndClick(this.clickMenuButton);
+    await this.highlightAndClick(this.clickLogoutButton);
     if (await this.isVisible(this.userInput)) {
       logger.pass(`Logout successful`);
     } else {
