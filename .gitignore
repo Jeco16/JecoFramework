@@ -5,3 +5,4 @@ report/
 .env.local
 artifacts/
 test-results/
+try
