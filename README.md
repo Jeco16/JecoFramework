@@ -405,7 +405,7 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.7.2
+Current version: 0.7.4
 
 For more information, consult the **CHANGELOG.md** file.
 

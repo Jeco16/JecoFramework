@@ -2,6 +2,12 @@
 
 ## [0.7.0] - 2026/08/26
 
+### Fixed
+
+- Error on git workflow
+
+## [0.7.0] - 2026/08/26
+
 ### Added
 
 - `.env.example` and secrets handling guidelines (`README.md` section "Secrets & .env files").
