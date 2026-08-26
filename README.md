@@ -22,26 +22,28 @@ Licensed under Apache 2.0.
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Tests](#tests)
-- [Environment management](#environment-management)
-- [Secrets \& .env files](#secrets--env-files)
-- [Continuous integration](#continuous-integration)
-  - [CI steps](#ci-steps)
-  - [Smoke test configuration](#smoke-test-configuration)
-- [Report](#report)
-- [Self-tests](#self-tests)
-- [Element highlighting](#element-highlighting)
-- [Eslint/Prettier](#eslintprettier)
-- [Version](#version)
-- [Roadmap](#roadmap)
-  - [v0.8.0](#v080)
-  - [v1.0.0](#v100)
-  - [future goals](#future-goals)
+- [JecoFramework - Enterprise Playwright Automation Framework](#jecoframework---enterprise-playwright-automation-framework)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Project Structure](#project-structure)
+  - [Tests](#tests)
+  - [Environment management](#environment-management)
+  - [Secrets \& .env files](#secrets--env-files)
+  - [Continuous integration](#continuous-integration)
+    - [CI steps](#ci-steps)
+    - [Smoke test configuration](#smoke-test-configuration)
+  - [Report](#report)
+  - [Self-tests](#self-tests)
+  - [Element highlighting](#element-highlighting)
+  - [Eslint/Prettier](#eslintprettier)
+  - [Version](#version)
+  - [Roadmap](#roadmap)
+    - [v0.8.0](#v080)
+    - [v1.0.0](#v100)
+    - [future goals](#future-goals)
 
 ## Quick Start
 
@@ -403,7 +405,7 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.7.0
+Current version: 0.7.2
 
 For more information, consult the **CHANGELOG.md** file.
 
