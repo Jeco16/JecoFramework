@@ -1,3 +1,8 @@
+/*
+Copyright 2026 Jacopo Enrico Marinaccio
+Licensed under the Apache License, Version 2.0
+You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+*/
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -14,6 +19,10 @@ export default class CustomizeReportReporter {
       const dataDir = path.join(process.cwd(), 'report', 'data');
       await fs.rm(dataDir, { recursive: true, force: true }).catch(() => {});
       await fs.mkdir(dataDir, { recursive: true });
+      // also clear attachments from previous runs so report/attachments is fresh each run
+      const attachmentsDir = path.join(process.cwd(), 'report', 'attachments');
+      await fs.rm(attachmentsDir, { recursive: true, force: true }).catch(() => {});
+      await fs.mkdir(attachmentsDir, { recursive: true }).catch(() => {});
     } catch (e) {
       // ignore
     }
@@ -25,27 +34,37 @@ export default class CustomizeReportReporter {
       const indexHtml = path.join(reportDir, 'index.html');
 
       const css = `/* Custom report styles */
-body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; }
-.jeco-header { display:flex; align-items:center; gap:12px; padding:12px; background: #f6f8fa; }
-.jeco-header img { height:70px; border-radius:6px; }
-.jeco-run-title { font-weight:700; font-size:25px; }
-.jeco-metadata-panel { margin: 12px; padding: 12px; border: 1px solid #e6e6e6; background: #fff; border-radius: 6px; }
-.jeco-test-row { padding:8px 10px; border-bottom:1px solid #f0f0f0; }
-.jeco-test-title { font-weight:600; }
-  .jeco-test-meta { color:#666; font-size:13px; margin-top:4px; }
-  .status-pass { background: rgba(16,185,129,0.03); }
-  .status-fail { background: rgba(239,68,68,0.03); }
-  .status-skip { background: rgba(245,158,11,0.03); }
-  .status-other { background: rgba(99,102,241,0.03); }
-  .jeco-test-meta strong.status-text { font-weight:700; }
-  .status-pass .jeco-test-meta strong.status-text { color: #16a34a; }
-  .status-fail .jeco-test-meta strong.status-text { color: #dc2626; }
-  .status-skip .jeco-test-meta strong.status-text { color: #f59e0b; }
-  .step-row { margin:4px 0; }
-  .step-pass strong.status-text { color: #16a34a; }
-  .step-fail strong.status-text { color: #dc2626; }
-  .step-skip strong.status-text { color: #f59e0b; }
-`;
+    body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; color:#111; background: #f3f4f6; }
+    .jeco-header { display:flex; align-items:center; gap:12px; padding:16px 18px; background: linear-gradient(90deg,#ffffff, #f8fafc); box-shadow: 0 1px 0 rgba(0,0,0,0.04);} 
+    .jeco-header img { height:56px; border-radius:8px; }
+    .jeco-run-title { font-weight:700; font-size:20px; }
+    .jeco-metadata-panel { margin: 16px auto; padding: 18px; border: 1px solid #eef2f7; background: #fff; border-radius: 10px; max-width:1100px; }
+    .jeco-test-row { padding:12px 14px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:12px; }
+    .jeco-test-title { font-weight:600; font-size:15px; }
+    .jeco-test-meta { color:#475569; font-size:13px; margin-top:4px; }
+    .status-pass { background: rgba(16,185,129,0.03); }
+    .status-fail { background: rgba(239,68,68,0.03); }
+    .status-skip { background: rgba(245,158,11,0.03); }
+    .status-other { background: rgba(99,102,241,0.03); }
+    .jeco-test-meta strong.status-text { font-weight:700; padding:4px 8px; border-radius:6px; font-size:12px; }
+    .status-pass .jeco-test-meta strong.status-text { color: #065f46; background: rgba(16,185,129,0.12); }
+    .status-fail .jeco-test-meta strong.status-text { color: #7f1d1d; background: rgba(239,68,68,0.08); }
+    .status-skip .jeco-test-meta strong.status-text { color: #92400e; background: rgba(245,158,11,0.08); }
+    .step-row { margin:6px 0; }
+    .step-pass strong.status-text { color: #16a34a; }
+    .step-fail strong.status-text { color: #dc2626; }
+    .step-skip strong.status-text { color: #f59e0b; }
+    .jeco-steps { font-size:13px; transition: max-height 200ms ease; overflow:hidden; }
+    .jeco-meta-json { background:#fff; border:1px solid #eef2f6; padding:10px; border-radius:8px; max-height:260px; overflow:auto; font-family:monospace; font-size:12px; }
+    .attachments-grid { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+    .attachment-thumb { display:block; width:320px; }
+    .attachment-thumb img { width:100%; height:220px; object-fit:cover; border-radius:8px; box-shadow: 0 6px 18px rgba(16,24,40,0.08); border:1px solid #eef2f6; transition: transform 140ms ease, box-shadow 140ms ease; cursor:pointer; }
+    .attachment-thumb img:hover { transform:scale(1.03); box-shadow: 0 12px 36px rgba(16,24,40,0.12); }
+    .attachment-caption { font-size:12px; color:#475569; margin-top:6px; }
+    .lightbox { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.7); z-index:9999; padding:20px; }
+    .lightbox img, .lightbox video { max-width:calc(100% - 80px); max-height:calc(100% - 80px); border-radius:8px; box-shadow: 0 20px 60px rgba(2,6,23,0.6); }
+    .lightbox .close { position:absolute; top:18px; right:20px; color:#fff; font-size:20px; cursor:pointer; }
+    `;
 
       // copy logo if present
       const projectSvg = path.resolve(process.cwd(), 'src', 'utils', 'images', 'logo.svg');
@@ -257,35 +276,120 @@ body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; }
         const slices = [ {label:'Passed', value:counts.passed, color:'#16a34a'}, {label:'Failed', value:counts.failed, color:'#dc2626'}, {label:'Skipped', value:counts.skipped, color:'#f59e0b'} ];
         let start = -0.5 * Math.PI;
         slices.forEach(s => { const ang = (s.value/total) * 2 * Math.PI; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.fillStyle = s.color; ctx.arc(cx, cy, radius, start, start + ang); ctx.closePath(); ctx.fill(); start += ang; });
-        document.getElementById('legend').innerHTML = slices.map(s => '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:12px;height:12px;background:' + s.color + ';display:inline-block;border-radius:2px"></span><strong style="width:60px">' + s.label + '</strong> ' + s.value + '</div>').join('');
+        // compute success percentage and render legend with percentage
+        const totalTests = counts.passed + counts.failed + counts.skipped;
+        const successPercent = totalTests ? Math.round((counts.passed / totalTests) * 100) : 0;
+        const slicesHtml = slices.map(s => '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:12px;height:12px;background:' + s.color + ';display:inline-block;border-radius:2px"></span><strong style="width:60px">' + s.label + '</strong> ' + s.value + '</div>').join('');
+        document.getElementById('legend').innerHTML = '<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:28px;font-weight:700">' + successPercent + '%</div><div style="font-size:13px;color:#6b7280">Success rate</div></div>' + slicesHtml + '</div>';
         const list = document.getElementById('test-list');
         if (!metas.length) { list.innerHTML = '<div>No tests found</div>'; return; }
         function fmt(d){ try{ if(!d) return ''; const D = new Date(d); return D.toLocaleString('it-IT'); } catch(e){ return d||''; } }
-        list.innerHTML = metas.map(m => {
+        list.innerHTML = metas.map((m, idx) => {
           const rawStatus = m.status || '';
           const st = (rawStatus || '').toLowerCase();
           const cls = st==='passed' ? 'status-pass' : st==='failed' ? 'status-fail' : (st==='skipped' || st==='timedout') ? 'status-skip' : 'status-other';
           const s = fmt(m.startTime);
           const dur = m.duration != null ? m.duration + ' ms' : '';
           const statusHtml = '<strong class="status-text">' + (rawStatus || '') + '</strong>';
-          return '<div class="jeco-test-row ' + cls + '"><div class="jeco-test-title">' + (m.title||m.testId) + '</div><div class="jeco-test-meta">' + statusHtml + (s ? ' — ' + s : '') + (dur ? ' — ' + dur : '') + '</div></div>';
-        }).join('');
-        metas.forEach(m => {
-          if (Array.isArray(m.steps) && m.steps.length) {
-            const c = document.createElement('div');
-            let h = '<details style="margin:6px 0"><summary>Steps for ' + (m.title||m.testId) + '</summary><ul>';
-            h += m.steps.map(function(s){
-              const raw = s.status || '';
-              const st = (raw || '').toLowerCase();
-              const cls = st==='passed' ? 'step-pass' : st==='failed' ? 'step-fail' : (st==='skipped' || st==='timedout') ? 'step-skip' : '';
-              const dur = s.duration ? ' ('+s.duration+'ms)' : '';
-              const statusHtml = '<strong class="status-text">'+ (raw || '') +'</strong>';
-              return '<li class="step-row ' + cls + '">' + (s.title||s.name||'') + ' — ' + statusHtml + dur + '</li>';
-            }).join('');
-            h += '</ul></details>';
-            c.innerHTML = h;
-            list.appendChild(c);
+          // build steps html collapsed by default and include attachments inside the expandable panel
+          let stepsHtml = '';
+          try {
+            let stepsInner = '';
+            if (Array.isArray(m.steps) && m.steps.length) {
+              const items = m.steps.map(function(s){
+                const raw = s.status || '';
+                const st2 = (raw || '').toLowerCase();
+                const cls2 = st2==='passed' ? 'step-pass' : st2==='failed' ? 'step-fail' : (st2==='skipped' || st2==='timedout') ? 'step-skip' : '';
+                const dur2 = s.duration ? ' ('+s.duration+'ms)' : '';
+                const statusHtml2 = '<strong class="status-text">'+ (raw || '') +'</strong>';
+                return '<li class="step-row ' + cls2 + '">' + (s.title||s.name||'') + ' — ' + statusHtml2 + dur2 + '</li>';
+              }).join('');
+              stepsInner = '<ul style="margin:0;padding-left:18px">' + items + '</ul>';
+            } else {
+              const dbg = "<div>No steps recorded for this test. Ensure tests use 'test.step' or enable Playwright report data.</div>";
+              const metaJson = '<pre class="jeco-meta-json">' + (function(){ try { return JSON.stringify(m, null, 2); } catch(e){ return String(m); } })() + '</pre>';
+              stepsInner = dbg + metaJson;
+            }
+
+            // attachments rendering (filter metadata and inject inside steps panel)
+            let attachmentsInner = '';
+            if (Array.isArray(m.attachments) && m.attachments.length) {
+              const files = (m.attachments || []).filter(a => {
+                const ct = (a.contentType || '').toLowerCase();
+                const name = (a.name || '').toLowerCase();
+                if (ct.indexOf('application/json') === 0) return false;
+                if (name === 'test-metadata' || name === 'metadata' || name === 'test-metadata.json') return false;
+                return true;
+              });
+              if (files.length) {
+                attachmentsInner = '<div class="attachments-grid">' + files.map(function(a){
+                  const p = a.path || '';
+                  const name = a.name || p.split('/').pop();
+                  const ct = (a.contentType || '').toLowerCase();
+                  if (ct.startsWith('image/') || p.match(/(png|jpg|jpeg|gif)$/i)) {
+                    const inline = a.inline || null;
+                    const src = inline ? inline : encodeURI(p);
+                    return '<div class="attachment-thumb">' +
+                      '<img src="' + src + '" alt="' + name + '" data-src="' + (inline ? src : encodeURI(p)) + '"/>' +
+                      '<div class="attachment-caption">' + name + '</div>' +
+                    '</div>';
+                  }
+                  if (ct.startsWith('video/') || p.match(/(mp4|webm)$/i)) {
+                    const src = encodeURI(p);
+                    return '<div class="attachment-thumb">' +
+                      '<video controls preload="metadata" style="width:100%;height:140px;object-fit:cover;border-radius:8px"><source src="' + src + '"></video>' +
+                      '<div class="attachment-caption">' + name + '</div>' +
+                    '</div>';
+                  }
+                  return '<div class="attachment-thumb"><a href="' + p + '" target="_blank">' + name + '</a></div>';
+                }).join('') + '</div>';
+              }
+            }
+
+            stepsHtml = '<div class="jeco-steps" style="display:none;margin:6px 0 12px 12px;padding:12px;background:#fafafa;border-radius:6px">' + stepsInner + attachmentsInner + '</div>';
+          } catch (e) {
+            stepsHtml = '<div class="jeco-steps" style="display:none;margin:6px 0 12px 12px;padding:12px;background:#fafafa;border-radius:6px">Error rendering steps</div>';
           }
+          return '<div data-idx="' + idx + '">' +
+            '<div class="jeco-test-row ' + cls + '" role="button" tabindex="0">' +
+              '<div class="jeco-test-title">' + (m.title||m.testId) + '</div>' +
+              '<div class="jeco-test-meta">' + statusHtml + (s ? ' — ' + s : '') + (dur ? ' — ' + dur : '') + '</div>' +
+            '</div>' +
+            stepsHtml +
+          '</div>';
+        }).join('');
+
+        // attach click/keyboard handlers to toggle steps
+        Array.from(list.querySelectorAll('[data-idx]')).forEach(function(container){
+          const row = container.querySelector('.jeco-test-row');
+          const steps = container.querySelector('.jeco-steps');
+          if (!row || !steps) return;
+          row.style.cursor = 'pointer';
+          row.addEventListener('click', function(){
+            steps.style.display = steps.style.display === 'none' ? 'block' : 'none';
+            if (steps.style.display === 'block') row.setAttribute('aria-expanded', 'true'); else row.setAttribute('aria-expanded', 'false');
+          });
+          row.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.click(); } });
+        });
+        // lightbox: open clicked image in overlay
+        function ensureLightbox(){
+          if (document.querySelector('.lightbox')) return document.querySelector('.lightbox');
+          const lb = document.createElement('div'); lb.className = 'lightbox'; lb.style.display='none';
+          const img = document.createElement('img'); lb.appendChild(img);
+          const close = document.createElement('div'); close.className='close'; close.textContent='✕'; lb.appendChild(close);
+          close.addEventListener('click', function(){ lb.style.display='none'; });
+          lb.addEventListener('click', function(e){ if (e.target === lb) lb.style.display='none'; });
+          document.body.appendChild(lb);
+          return lb;
+        }
+        Array.from(list.querySelectorAll('.attachment-thumb img')).forEach(function(img){
+          img.addEventListener('click', function(e){
+            const src = img.getAttribute('data-src') || img.src;
+            const lb = ensureLightbox();
+            const el = lb.querySelector('img');
+            el.src = src;
+            lb.style.display = 'flex';
+          });
         });
       })();
       </script>

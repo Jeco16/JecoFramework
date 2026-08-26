@@ -45,6 +45,15 @@ export default defineConfig({
         video: 'off',
       },
     },
+    {
+      name: 'self',
+      testDir: 'tests/self',
+      use: {
+        headless: true,
+        screenshot: 'off',
+        video: 'off',
+      },
+    },
     // Additional projects can be defined here for different browsers, devices, or test types.
   ],
 });

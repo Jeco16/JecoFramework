@@ -1,6 +1,6 @@
 {
   "name": "JecoFramework",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
@@ -8,8 +8,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "pretest": "node -e \"require('fs').mkdirSync('./playwright-report',{recursive:true});\"",
-    "test": "npx playwright test",
+    "pretest": "node -e \"if (process.env.CREATE_PLAYWRIGHT_REPORT==='true') require('fs').mkdirSync('./playwright-report',{recursive:true});\"",
+    "test": "npx playwright test --project=e2e --project=api",
     "test:e2e": "npx playwright test --project=e2e",
     "test:api": "npx playwright test --project=api",
     "test:headed": "npx playwright test --headed",
@@ -18,7 +18,8 @@
     "install:browsers": "npx playwright install",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
-    "format": "prettier --write \"**/*.{js,json,md}\""
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "selftest": "npx playwright test --project=self --reporter=list"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.0",

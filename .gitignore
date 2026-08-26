@@ -1,2 +1,7 @@
 node_modules
+playwright-report/
 report/
+.env
+.env.local
+artifacts/
+test-results/

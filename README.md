@@ -29,14 +29,19 @@ Licensed under Apache 2.0.
 - [Project Structure](#project-structure)
 - [Tests](#tests)
 - [Environment management](#environment-management)
+- [Secrets \& .env files](#secrets--env-files)
 - [Continuous integration](#continuous-integration)
   - [CI steps](#ci-steps)
   - [Smoke test configuration](#smoke-test-configuration)
 - [Report](#report)
+- [Self-tests](#self-tests)
 - [Element highlighting](#element-highlighting)
 - [Eslint/Prettier](#eslintprettier)
 - [Version](#version)
 - [Roadmap](#roadmap)
+  - [v0.8.0](#v080)
+  - [v1.0.0](#v100)
+  - [future goals](#future-goals)
 
 ## Quick Start
 
@@ -136,9 +141,9 @@ npx playwright install
 │   │   │
 │   │   └── 📄 api.assertions.js → Domain assertions for API responses
 │   │
-│   ├── 🟦 assertions/ 📄 fail.assertions.js → Management of assertions
+│   ├── 🟦 assertions → Management of assertions
 │   │
-│   ├── 🟦 config/ 📄 env.config.js → Environment-specific base URLs and credentials
+│   ├── 🟦 config → Environment-specific base URLs and credentials
 │   │
 │   ├── 🟦 data
 │   │   │
@@ -154,7 +159,7 @@ npx playwright install
 │   │   │
 │   │   └── 📄 login.page.js → Example page object
 │   │
-│   ├── 🟦 reporters/ 📄 customizeReport.reporter.js → Custom Playwright reporter generating the standalone HTML report
+│   ├── 🟦 reporters → Custom Playwright reporter generating the standalone HTML report
 │   │
 │   └── 🟦 utils
 │       │
@@ -164,11 +169,15 @@ npx playwright install
 │
 ├── 📁 tests
 │   │
-│   ├── 🟦 e2e/ 📄 login.spec.js → Sample automated E2E test
+│   ├── 🟦 e2e → Sample automated E2E test
 │   │
-│   ├── 🟦 api/ 📄 booking.spec.js → Sample automated API test
+│   ├── 🟦 api → Sample automated API test
 │   │
-│   └── 🟦 fixtures/ 📄 fixtures.js → Generic fixture file (page objects, api client, per-test data loading + metadata)
+│   ├── 🟦 self → Sample automated framework-self test
+│   │
+│   └── 🟦 fixtures → Generic fixture file (page objects, api client, per-test data loading + metadata)
+│
+├── 📄 .env.example
 │
 ├── 📄 .eslintrc.cjs / .eslintignore / .prettierrc / .prettierignore → Lint/format config
 │
@@ -243,13 +252,62 @@ $env:ENV='qa'; npm run test
 
 `env.baseURL`, `env.apiURL` and `env.credentials` are then imported directly in test files (see `tests/e2e/login.spec.js` and `tests/api/booking.spec.js`) — no tag parsing or per-suite config file needed.
 
+## Secrets & .env files
+
+For local development, keep environment-specific settings and secrets out of version control by using a `.env` file. A safe example is provided at `.env.example`.
+
+Usage:
+
+1. Copy `.env.example` to `.env` and update values (do **not** commit `.env`).
+
+```bash
+cp .env.example .env
+```
+
+2. Run tests using the env values:
+
+PowerShell:
+
+```powershell
+$env:ENV='qa'; npm run test
+```
+
+Unix/bash:
+
+```bash
+ENV=qa npm run test
+```
+
+3. CI: store secrets and environment variables securely in your CI system (e.g. GitHub Actions Secrets, Azure Pipelines variables). Avoid placing secrets directly in repository files.
+
+Notes:
+
+- `.env` and `.env.local` are already listed in `.gitignore` to avoid accidental commits.
+- The project loads env vars via `process.env`. The `dotenv` package is available for local convenience — simply `npm install` and `require('dotenv').config()` at the test bootstrap if you want automatic loading in local runs.
+
 ## Continuous integration
 
-In this framework, a **CI workflow** (ci.yml) is configured that runs npm ci, installs the Playwright browsers, applies npm run lint:fix, launches the smoke tests with --grep **"@smoke"** in headless **(HEADLESS=true)**, and loads the playwright-report and artifacts artifacts.
+In this framework, a **CI workflow** (ci.yml) is configured with two jobs:
+
+1. `selftest`: installs dependencies and Playwright browsers, then runs the framework self-tests (`npm run selftest`) and uploads the generated `report/` as an artifact (`self-report`). This job runs first and gates the second job.
+2. `test`: depends on `selftest`; runs npm ci, installs the Playwright browsers, applies `npm run lint:fix`, launches the smoke tests with `--grep "@smoke"` in headless (`HEADLESS=true`), and uploads the `playwright-report` and `artifacts` folders.
 
 ### CI steps
 
 ```powershell
+# selftest job
+Install dependencies
+run: npm ci
+
+Install Playwright browsers
+run: npm run install:browsers
+
+Run framework self-tests
+run: npm run selftest
+
+Upload selftest report (report/)
+
+# test job (needs: selftest)
 Install dependencies
 run: npm ci
 
@@ -277,16 +335,34 @@ test.describe('Saucedemo - E2E', () => {
 
 This framework generates a **custom standalone HTML report** (`src/reporters/customizeReport.reporter.js`), configured in `playwright.config.js` alongside the `list` reporter — no dependency on Playwright's built-in `html` reporter.
 
+![Report screenshot](src/utils/images/report.png)
+
 On every run:
 
-- `report/data/` is wiped and recreated (`onBegin`), so stale metadata from previous runs never leaks in.
-- The `testData` fixture (see `tests/fixtures/fixtures.js`) writes a per-test metadata file (`testId`, `dataFile`, `keys`, `status`, `startTime`, `duration`) into `report/data/` after each test.
+- `report/data/` and `report/attachments/` are wiped and recreated (`onBegin`), so stale metadata/screenshots from previous runs never leak in.
+- The `testData` fixture (see `tests/fixtures/fixtures.js`) writes a per-test metadata file (`testId`, `dataFile`, `keys`, `status`, `startTime`, `duration`, `steps`, `attachments`) into `report/data/` after each test. Logger output captured during the test is recorded as `steps`, and failed assertions are recorded as failed steps.
+- Screenshots for **failed tests only** are copied to `report/attachments/<testId>/`; small images are additionally inlined as base64 in the metadata so they always render, even when the report is opened directly via `file://`.
 - At the end of the run (`onEnd`), the reporter aggregates that metadata, keeps only tests that actually ran, and writes a single self-contained `report/index.html` with:
   - A title showing the run date and time (`Report of dd/mm/yyyy HH:mm`).
-  - A pie chart (Passed / Failed / Skipped) with legend.
-  - A list of executed tests with **bold, color-coded status** (green = passed, red = failed, yellow = skipped) plus start time and duration.
-  - Expandable step details per test, also bold/color-coded by status.
+  - A pie chart (Passed / Failed / Skipped) with legend **and the overall success percentage** displayed next to it.
+  - A clickable list of executed tests with **bold, color-coded status** (green = passed, red = failed, yellow = skipped) plus start time and duration.
+  - Clicking a test row expands a panel showing its step list (including logger output and failed assertions), followed by any screenshot/video attachments as thumbnails.
+  - Attachment thumbnails open in a **lightbox** on click for a larger view; internal `test-metadata` attachments are filtered out of the display.
 - The report embeds its own CSS/logo (no external assets required) and is regenerated from scratch on every run — the `report/` folder is git-ignored.
+
+## Self-tests
+
+The framework ships with its own self-tests under `tests/self/`, used to validate the fixtures and reporter without depending on the `e2e`/`api` suites:
+
+- Verifies the `testData` fixture writes the expected metadata file to `report/data/`.
+- Runs a child Playwright process to confirm end-to-end fixture behavior.
+- Confirms the reporter's `onBegin`/`onEnd` lifecycle produces a valid `report/index.html`.
+
+Self-tests run in their own Playwright project (`self`) and are **not** part of `npm run test`. Run them explicitly with:
+
+```bash
+npm run selftest
+```
 
 ## Element highlighting
 
@@ -327,23 +403,19 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.6.0
+Current version: 0.7.0
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
-
-### v0.7.0
-
-- `.env.example` files and secrets handling guidelines
-- Framework self-tests
-- Attachment linking (screenshots/videos of failed tests) in the custom report
 
 ### v0.8.0
 
 - Automatic release processes
 - Automatic Changelog.md
 - Dependency security scanning in CI (npm audit)
+- Update Reporting
+- Update console logging
 
 ### v1.0.0
 
