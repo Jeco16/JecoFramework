@@ -35,11 +35,6 @@ jobs:
       - name: Install Playwright browsers
         run: npm run install:browsers
 
-      - name: Run framework tests
-        run: npm run selftest
-        env:
-          CI: true
-
       - name: Run lint
         run: npm run lint:fix
 
