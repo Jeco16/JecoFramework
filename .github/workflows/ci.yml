@@ -1,4 +1,4 @@
-﻿﻿# CI workflow
+# CI workflow
 name: CI
 
 on:
