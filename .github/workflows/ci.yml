@@ -1,4 +1,4 @@
-﻿#
+﻿﻿#
 #Copyright 2026 Jacopo Enrico Marinaccio
 # Licensed under the Apache License, Version 2.0
 # You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
@@ -34,6 +34,11 @@ jobs:
 
       - name: Install Playwright browsers
         run: npm run install:browsers
+
+      - name: Run framework tests
+        run: npm run selftest
+        env:
+          CI: true
 
       - name: Run lint
         run: npm run lint:fix
