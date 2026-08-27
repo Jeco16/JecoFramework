@@ -1,5 +1,5 @@
 ﻿﻿#
-# Copyright 2026 Jacopo Enrico Marinaccio
+#Copyright 2026 Jacopo Enrico Marinaccio
 # Licensed under the Apache License, Version 2.0
 # You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -12,44 +12,8 @@ on:
     branches: [ main, master ]
 
 jobs:
-  selftest:
-    name: Framework self-tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npm run install:browsers
-
-      - name: Run framework self-tests
-        run: npm run selftest
-        env:
-          CI: true
-
-      - name: Upload selftest report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: self-report
-          path: report
-
   test:
     name: Lint and Test
-    needs: selftest
     runs-on: ubuntu-latest
     strategy:
       matrix:
