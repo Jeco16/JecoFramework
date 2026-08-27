@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.0] - 2026/08/28
+
+- Dependency security scanning in CI (`npm audit`)
+
 ## [0.7.5] - 2026/08/27
 
 ### Added

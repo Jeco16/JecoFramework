@@ -22,28 +22,26 @@ Licensed under Apache 2.0.
 
 ## Table of Contents
 
-- [JecoFramework - Enterprise Playwright Automation Framework](#jecoframework---enterprise-playwright-automation-framework)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-  - [Features](#features)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Project Structure](#project-structure)
-  - [Tests](#tests)
-  - [Environment management](#environment-management)
-  - [Secrets \& .env files](#secrets--env-files)
-  - [Continuous integration](#continuous-integration)
-    - [CI steps](#ci-steps)
-    - [Smoke test configuration](#smoke-test-configuration)
-  - [Report](#report)
-  - [Self-tests](#self-tests)
-  - [Element highlighting](#element-highlighting)
-  - [Eslint/Prettier](#eslintprettier)
-  - [Version](#version)
-  - [Roadmap](#roadmap)
-    - [v0.8.0](#v080)
-    - [v1.0.0](#v100)
-    - [future goals](#future-goals)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Tests](#tests)
+- [Environment management](#environment-management)
+- [Secrets \& .env files](#secrets--env-files)
+- [Continuous integration](#continuous-integration)
+  - [CI steps](#ci-steps)
+  - [Smoke test configuration](#smoke-test-configuration)
+- [Report](#report)
+- [Self-tests](#self-tests)
+- [Element highlighting](#element-highlighting)
+- [Eslint/Prettier](#eslintprettier)
+- [Version](#version)
+- [Roadmap](#roadmap)
+  - [v0.8.0](#v080)
+  - [v1.0.0](#v100)
+  - [future goals](#future-goals)
 
 ## Quick Start
 
@@ -405,19 +403,17 @@ npm run lint:fix
 
 ## Version
 
-Current version: 0.7.5
+Current version: [Latest release](https://github.com/Jeco16/JecoFramework/releases/latest)
 
 For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v0.8.0
+### v0.9.0
 
-- Automatic release processes
-- Automatic Changelog.md
-- Dependency security scanning in CI (npm audit)
 - Update Reporting
 - Update console logging
+- npm package
 
 ### v1.0.0
 
@@ -428,3 +424,5 @@ For more information, consult the **CHANGELOG.md** file.
 
 - Docker integration
 - MCP integration
+- Automatic release processes
+- Automatic Changelog.md
