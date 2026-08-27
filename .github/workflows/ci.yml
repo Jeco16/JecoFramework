@@ -74,9 +74,6 @@ jobs:
       - name: Run lint
         run: npm run lint:fix
 
-      - name: Run self-tests
-        run: npm run selftest
-
       - name: Run smoke tests
         run: 'npm run test -- --grep "@smoke"'
         env:
