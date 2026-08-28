@@ -1,0 +1,29 @@
+name: Publish create-jeco-framework
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'packages/create-jeco-framework/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+      - name: Install and build
+        run: |
+          cd packages/create-jeco-framework
+          npm ci
+      - name: Publish package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd packages/create-jeco-framework
+          npm publish --access public

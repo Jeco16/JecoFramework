@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "tsconfig": "tsconfig.docs.json",
+  "readme": "README.md",
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "name": "JecoFramework API Documentation"
+}

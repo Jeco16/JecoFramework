@@ -34,12 +34,15 @@ Licensed under Apache 2.0.
   - [CI steps](#ci-steps)
   - [Smoke test configuration](#smoke-test-configuration)
 - [Report](#report)
+  - [Viewing the report](#viewing-the-report)
+- [Logger \& Console](#logger--console)
+- [Documentation](#documentation)
+- [Release \& CI notes](#release--ci-notes)
 - [Self-tests](#self-tests)
 - [Element highlighting](#element-highlighting)
 - [Eslint/Prettier](#eslintprettier)
 - [Version](#version)
 - [Roadmap](#roadmap)
-  - [v0.8.0](#v080)
   - [v1.0.0](#v100)
   - [future goals](#future-goals)
 
@@ -51,6 +54,12 @@ git clone https://github.com/Jeco16/JecoFramework
 npm install
 
 npm run test
+```
+
+If you want to scaffold a new project from within this repository (local development of the scaffolder), use:
+
+```bash
+npm run scaffold:build-template
 ```
 
 Run a single project (e2e or api):
@@ -185,7 +194,11 @@ npx playwright install
 │
 ├── 📄 CHANGELOG.md
 │
+├── 📄 CONTRIBUTING.md
+│
 ├── 📄 LICENSE
+│
+├── 📄 MIGRATION.md → Breaking/behavioral changes to review when upgrading to a new major version
 │
 ├── 📄 NOTICE
 │
@@ -193,9 +206,13 @@ npx playwright install
 │
 ├── 📄 package.json
 │
-├── 📄 playwright.config.js → Single source of truth: `projects` for `e2e` and `api`
+├── 📄 playwright.config.js → Single source of truth: `projects` for `e2e`, `api` and `self`
 │
-└── 📄 README.md
+├── 📄 README.md
+│
+├── 📄 SECURITY.md
+│
+└── 📄 typedoc.json / tsconfig.docs.json → `npm run docs` configuration (see `docs/` output, git-ignored)
 ```
 
 ## Tests
@@ -283,7 +300,7 @@ ENV=qa npm run test
 Notes:
 
 - `.env` and `.env.local` are already listed in `.gitignore` to avoid accidental commits.
-- The project loads env vars via `process.env`. The `dotenv` package is available for local convenience — simply `npm install` and `require('dotenv').config()` at the test bootstrap if you want automatic loading in local runs.
+- `.env` is loaded automatically: both `playwright.config.js` and `tests/fixtures/fixtures.js` import `dotenv/config` at bootstrap, so values are available via `process.env` in every test/project without any extra setup.
 
 ## Continuous integration
 
@@ -310,6 +327,9 @@ Upload selftest report (report/)
 # test job (needs: selftest)
 Install dependencies
 run: npm ci
+
+Run npm audit
+run: npm audit --audit-level=high
 
 Install Playwright browsers
 run: npm run install:browsers
@@ -362,12 +382,20 @@ On every run:
   - `LOG_TO_CONSOLE=false` — alternate flag to avoid printing logs to the console while preserving capture.
 - When console output is suppressed, the test runner prints a short, highlighted notice pointing to `report/index.html` so you can open the report for full details.
 
+## Documentation
+
+API documentation is generated from the existing JSDoc comments with [TypeDoc](https://typedoc.org/) (via `tsconfig.docs.json` + `typedoc.json`, which enable `allowJs` so TypeScript-style JSDoc types like `{import('@playwright/test').Page}` are understood):
+
+```bash
+npm run docs
+```
+
+Output is written to `docs/api/` (git-ignored, regenerated on demand — open `docs/api/index.html`).
+
 ## Release & CI notes
 
-- `semantic-release` has been added to the repository configuration to automate changelog generation and publishing. To enable automated releases in CI you must provide:
-  - `GITHUB_TOKEN` with repo write and workflow permissions (or configure `persist-credentials: true` in the release workflow).
-  - `NPM_TOKEN` (if publishing to npm).
-- The `selftest` job runs first in CI and uploads `report/` as an artifact; the main `test` job depends on it. Ensure the CI runner has permissions to create artifacts and access the required secrets.
+- Releases are currently versioned and tagged manually (`package.json` version bump + git tag). `semantic-release`/Conventional Commits automation is **not yet configured** — it is a `v1.0.0` roadmap item; see `MIGRATION.md` and `CHANGELOG.md` for the current process.
+- The `selftest` job runs first in CI and uploads `report/` as an artifact; the main `test` job depends on it. Ensure the CI runner has permissions to create artifacts and access any required secrets.
 
 
 ## Self-tests
@@ -415,7 +443,6 @@ npm run lint
 ```
 
 3. ESLint, check and fix:
-4.
 
 ```bash
 npm run lint:fix
@@ -438,5 +465,4 @@ For more information, consult the **CHANGELOG.md** file.
 
 - Docker integration
 - MCP integration
-- Automatic release processes
-- Automatic Changelog.md
+- `semantic-release` + Conventional Commits (commitlint/husky) for automated releases and changelog generation
