@@ -397,7 +397,6 @@ Output is written to `docs/api/` (git-ignored, regenerated on demand — open `d
 - Releases are currently versioned and tagged manually (`package.json` version bump + git tag). `semantic-release`/Conventional Commits automation is **not yet configured** — it is a `v1.0.0` roadmap item; see `MIGRATION.md` and `CHANGELOG.md` for the current process.
 - The `selftest` job runs first in CI and uploads `report/` as an artifact; the main `test` job depends on it. Ensure the CI runner has permissions to create artifacts and access any required secrets.
 
-
 ## Self-tests
 
 The framework ships with its own self-tests under `tests/self/`, used to validate the fixtures and reporter without depending on the `e2e`/`api` suites:

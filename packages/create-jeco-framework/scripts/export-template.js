@@ -20,11 +20,15 @@ async function copyIfExists(relPath, destName) {
   const src = path.join(repoRoot, relPath);
   if (await fs.pathExists(src)) {
     const dest = path.join(templateDir, destName || path.basename(relPath));
-    await fs.copy(src, dest, { overwrite: true, filter: (srcPath) => {
-      // exclude heavy or CI-specific folders
-      if (/node_modules|playwright-report|report|artifacts|docs|\.git/.test(srcPath)) return false;
-      return true;
-    }});
+    await fs.copy(src, dest, {
+      overwrite: true,
+      filter: (srcPath) => {
+        // exclude heavy or CI-specific folders
+        if (/node_modules|playwright-report|report|artifacts|docs|\.git/.test(srcPath))
+          return false;
+        return true;
+      },
+    });
     console.log('copied', relPath, '->', dest);
   } else {
     console.log('skip, not found:', relPath);
@@ -45,7 +49,7 @@ async function run() {
   console.log('Template export complete.');
 }
 
-run().catch(err => {
+run().catch((err) => {
   console.error(err);
   process.exit(1);
 });

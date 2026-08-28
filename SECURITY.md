@@ -9,6 +9,7 @@ Preferred reporting channels:
 2. If you cannot use advisories, open an issue labeled `security` and avoid including sensitive information (tokens, passwords, PII) in public text.
 
 Information that helps triage the report:
+
 - Affected versions (e.g. v0.7.5, main)
 - Brief description of the issue
 - Steps to reproduce and a minimal proof-of-concept when possible
@@ -16,9 +17,11 @@ Information that helps triage the report:
 - Suggested mitigations or workarounds
 
 Response timeline
+
 - We aim to acknowledge reports within 72 hours.
 
 Responsible disclosure
+
 - Please avoid public disclosure until a fix or mitigation is available.
 
 Thank you for helping keep the project secure.

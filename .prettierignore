@@ -3,3 +3,4 @@ playwright-report
 artifacts
 test-results
 package-lock.json
+docs

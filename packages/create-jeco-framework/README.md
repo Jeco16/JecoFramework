@@ -1,6 +1,6 @@
 # create-jeco-framework
 
-CLI scaffold tool for JecoFramework. 
+CLI scaffold tool for JecoFramework.
 
 Usage:
 

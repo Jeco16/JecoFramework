@@ -25,18 +25,33 @@ test('custom reporter handles missing attachments and generates index.html', asy
     duration: 123,
     steps: [],
     attachments: [
-      { name: 'test-metadata', contentType: 'application/json', path: 'report/data/test-metadata.json' },
-      { name: 'nonexistent.png', contentType: 'image/png', path: 'report/attachments/nonexistent.png' }
+      {
+        name: 'test-metadata',
+        contentType: 'application/json',
+        path: 'report/data/test-metadata.json',
+      },
+      {
+        name: 'nonexistent.png',
+        contentType: 'image/png',
+        path: 'report/attachments/nonexistent.png',
+      },
     ],
-    ran: true
+    ran: true,
   };
 
-  await fs.writeFile(path.join(dataDir, 'MISSING_ATTACH.json'), JSON.stringify(meta, null, 2), 'utf8');
+  await fs.writeFile(
+    path.join(dataDir, 'MISSING_ATTACH.json'),
+    JSON.stringify(meta, null, 2),
+    'utf8'
+  );
 
   await reporter.onEnd({}, {});
 
   const indexPath = path.join(reportDir, 'index.html');
-  const exists = await fs.access(indexPath).then(() => true).catch(() => false);
+  const exists = await fs
+    .access(indexPath)
+    .then(() => true)
+    .catch(() => false);
   expect(exists).toBe(true);
 
   const html = await fs.readFile(indexPath, 'utf8');

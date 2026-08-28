@@ -75,27 +75,46 @@ export class ApiClient {
   }
 
   async get(path, opts = {}) {
-    logger.info('Request: GET ' + this._url(path) + ' with options: ' + JSON.stringify(opts, null, 2));
+    logger.info(
+      'Request: GET ' + this._url(path) + ' with options: ' + JSON.stringify(opts, null, 2)
+    );
     return this.rawRequest('GET', path, opts);
   }
 
   async post(path, body, opts = {}) {
-    logger.info('Request: POST ' + this._url(path) + ' with options: ' + JSON.stringify({ ...opts, body }, null, 2));
+    logger.info(
+      'Request: POST ' +
+        this._url(path) +
+        ' with options: ' +
+        JSON.stringify({ ...opts, body }, null, 2)
+    );
     return this.rawRequest('POST', path, { ...opts, body });
   }
 
   async put(path, body, opts = {}) {
-    logger.info('Request: PUT ' + this._url(path) + ' with options: ' + JSON.stringify({ ...opts, body }, null, 2));
+    logger.info(
+      'Request: PUT ' +
+        this._url(path) +
+        ' with options: ' +
+        JSON.stringify({ ...opts, body }, null, 2)
+    );
     return this.rawRequest('PUT', path, { ...opts, body });
   }
 
   async patch(path, body, opts = {}) {
-    logger.info('Request: PATCH ' + this._url(path) + ' with options: ' + JSON.stringify({ ...opts, body }, null, 2));
+    logger.info(
+      'Request: PATCH ' +
+        this._url(path) +
+        ' with options: ' +
+        JSON.stringify({ ...opts, body }, null, 2)
+    );
     return this.rawRequest('PATCH', path, { ...opts, body });
   }
 
   async delete(path, opts = {}) {
-    logger.info('Request: DELETE ' + this._url(path) + ' with options: ' + JSON.stringify(opts, null, 2));
+    logger.info(
+      'Request: DELETE ' + this._url(path) + ' with options: ' + JSON.stringify(opts, null, 2)
+    );
     return this.rawRequest('DELETE', path, opts);
   }
 

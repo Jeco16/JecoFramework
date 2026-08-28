@@ -37,6 +37,7 @@ npm test
 ## Reporting bugs and feature requests
 
 Open an issue on GitHub including:
+
 - A descriptive title
 - Steps to reproduce
 - Expected vs actual behavior

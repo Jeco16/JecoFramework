@@ -26,23 +26,29 @@ async function run() {
     const stat = await fs.stat(srcPath);
     if (stat.isDirectory()) {
       if (!dryRun) await fs.copy(srcPath, destPath, { overwrite: true });
-      console.log(dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`);
+      console.log(
+        dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`
+      );
     } else {
       if (file.endsWith('.ejs')) {
         const tpl = await fs.readFile(srcPath, 'utf8');
         const out = ejs.render(tpl, { name: path.basename(dest) });
         if (!dryRun) await fs.writeFile(destPath, out, 'utf8');
-        console.log(dryRun ? `[dry-run] render ${srcPath} -> ${destPath}` : `render ${srcPath} -> ${destPath}`);
+        console.log(
+          dryRun ? `[dry-run] render ${srcPath} -> ${destPath}` : `render ${srcPath} -> ${destPath}`
+        );
       } else {
         if (!dryRun) await fs.copy(srcPath, destPath, { overwrite: true });
-        console.log(dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`);
+        console.log(
+          dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`
+        );
       }
     }
   }
   console.log('Scaffold complete. Run `npm install` in the new project.');
 }
 
-run().catch(err => {
+run().catch((err) => {
   console.error('Error creating scaffold:', err);
   process.exit(1);
 });

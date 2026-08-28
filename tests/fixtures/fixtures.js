@@ -20,28 +20,30 @@ import fs from 'fs/promises';
       const reportIndex = pathModule.resolve(process.cwd(), 'report', 'index.html');
       const url = pathToFileURL(reportIndex).href;
       // Always print the notice for every run (no marker file)
-        // Friendly, concise message in English with highlighted link
-        // Use ANSI escape codes to make the report link more visible in terminals.
+      // Friendly, concise message in English with highlighted link
+      // Use ANSI escape codes to make the report link more visible in terminals.
+      // eslint-disable-next-line no-console
+      try {
+        const title = '\x1b[1m\x1b[33mLogs are suppressed in the console.\x1b[0m';
+        const hint = '\x1b[1mFor full details open the test report:\x1b[0m';
+        const highlight = `\x1b[30m\x1b[43m ${url} \x1b[0m`; // black on yellow background
+        console.log('');
+        console.log(title);
+        console.log(hint, highlight);
+        console.log('');
+      } catch (e) {
+        // fallback to plain message
         // eslint-disable-next-line no-console
-        try {
-          const title = '\x1b[1m\x1b[33mLogs are suppressed in the console.\x1b[0m';
-          const hint = '\x1b[1mFor full details open the test report:\x1b[0m';
-          const highlight = `\x1b[30m\x1b[43m ${url} \x1b[0m`; // black on yellow background
-          console.log('');
-          console.log(title);
-          console.log(hint, highlight);
-          console.log('');
-        } catch (e) {
-          // fallback to plain message
-          // eslint-disable-next-line no-console
-          console.log(`Logs are suppressed in the console. For full details, open the test report: ${url}`);
-        }
-        try {
-          globalThis.__JECO_LOG_NOTICE_PRINTED = true;
-        } catch (err) {
-          // ignore if cannot set global
-        }
+        console.log(
+          `Logs are suppressed in the console. For full details, open the test report: ${url}`
+        );
       }
+      try {
+        globalThis.__JECO_LOG_NOTICE_PRINTED = true;
+      } catch (err) {
+        // ignore if cannot set global
+      }
+    }
   } catch (e) {
     // ignore failures building the message
   }

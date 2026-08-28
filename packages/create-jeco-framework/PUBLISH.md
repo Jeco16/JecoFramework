@@ -14,5 +14,6 @@ npm publish --dry-run
 4. When ready, push to `main`. The workflow `.github/workflows/publish-create-package.yml` will publish automatically using `NPM_TOKEN`.
 
 Notes:
+
 - The package will be published with `--access public`. Make sure the npm account has rights.
 - If you prefer manual publishing, run `npm publish` locally after configuring `NODE_AUTH_TOKEN`.
