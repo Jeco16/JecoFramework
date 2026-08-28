@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths:
       - 'packages/create-jeco-framework/**'
+  # Allow manual runs from the Actions UI to retry publish without pushing code
+  workflow_dispatch: {}
 
 jobs:
   publish:
