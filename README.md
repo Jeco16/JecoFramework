@@ -350,6 +350,26 @@ On every run:
   - Attachment thumbnails open in a **lightbox** on click for a larger view; internal `test-metadata` attachments are filtered out of the display.
 - The report embeds its own CSS/logo (no external assets required) and is regenerated from scratch on every run — the `report/` folder is git-ignored.
 
+### Viewing the report
+
+- After a run, open the generated report in your browser. When running locally, use the `file://` URL to the project `report/index.html`. Example (Windows): `file:///C:/JecoFramework/report/index.html`.
+
+## Logger & Console
+
+- The framework captures logger output per-test and includes it as `steps` in the generated report, even when console output is suppressed.
+- To suppress console logging (useful for CI or quieter local runs), set one of the following environment variables:
+  - `LOG_SILENT=true` — fully silence console logs while still capturing them for the HTML report.
+  - `LOG_TO_CONSOLE=false` — alternate flag to avoid printing logs to the console while preserving capture.
+- When console output is suppressed, the test runner prints a short, highlighted notice pointing to `report/index.html` so you can open the report for full details.
+
+## Release & CI notes
+
+- `semantic-release` has been added to the repository configuration to automate changelog generation and publishing. To enable automated releases in CI you must provide:
+  - `GITHUB_TOKEN` with repo write and workflow permissions (or configure `persist-credentials: true` in the release workflow).
+  - `NPM_TOKEN` (if publishing to npm).
+- The `selftest` job runs first in CI and uploads `report/` as an artifact; the main `test` job depends on it. Ensure the CI runner has permissions to create artifacts and access the required secrets.
+
+
 ## Self-tests
 
 The framework ships with its own self-tests under `tests/self/`, used to validate the fixtures and reporter without depending on the `e2e`/`api` suites:
@@ -409,16 +429,10 @@ For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v0.9.0
-
-- Update Reporting
-- Update console logging
-- npm package
-
 ### v1.0.0
 
 - Stable public release
-- Full documentation pass (CONTRIBUTING, troubleshooting, multi-suite guide)
+- npm package
 
 ### future goals
 

@@ -5,6 +5,19 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 */
 const LEVELS = ['pass', 'debug', 'info', 'warn', 'error'];
 
+/**
+ * @module utils/logger
+ * @description Lightweight runtime logger with optional per-test capture support.
+ */
+
+/**
+ * @typedef {Object} LogEntry
+ * @property {string} level - Log level (pass|debug|info|warn|error)
+ * @property {string} msg - Log message
+ * @property {any} meta - Optional metadata attached to the log
+ * @property {string} time - ISO timestamp when the log was recorded
+ */
+
 function getLevelIndex() {
   const lvl = process.env.LOG_LEVEL ?? 'pass';
   const idx = LEVELS.indexOf(lvl);
@@ -16,22 +29,35 @@ function format(level, msg, meta) {
   const m = meta ? ` ${JSON.stringify(meta)}` : '';
   return `${time} [${level.toUpperCase()}] ${msg}${m}`;
 }
+function shouldLogToConsole() {
+  try {
+    if (typeof process.env.LOG_SILENT !== 'undefined') {
+      if (String(process.env.LOG_SILENT).toLowerCase() === 'true') return false;
+    }
+    if (typeof process.env.LOG_TO_CONSOLE !== 'undefined') {
+      return String(process.env.LOG_TO_CONSOLE).toLowerCase() !== 'false';
+    }
+  } catch (e) {
+    // ignore and fall through to default
+  }
+  return true;
+}
 
 export const logger = {
   pass: (msg, meta) => {
-    if (getLevelIndex() <= 0) console.log(format('PASS', msg, meta));
+    if (getLevelIndex() <= 0 && shouldLogToConsole()) console.log(format('PASS', msg, meta));
   },
   debug: (msg, meta) => {
-    if (getLevelIndex() <= 1) console.debug(format('DEBUG', msg, meta));
+    if (getLevelIndex() <= 1 && shouldLogToConsole()) console.debug(format('DEBUG', msg, meta));
   },
   info: (msg, meta) => {
-    if (getLevelIndex() <= 2) console.log(format('INFO', msg, meta));
+    if (getLevelIndex() <= 2 && shouldLogToConsole()) console.log(format('INFO', msg, meta));
   },
   warn: (msg, meta) => {
-    if (getLevelIndex() <= 3) console.warn(format('WARN', msg, meta));
+    if (getLevelIndex() <= 3 && shouldLogToConsole()) console.warn(format('WARN', msg, meta));
   },
   error: (msg, meta) => {
-    if (getLevelIndex() <= 4) console.error(format('ERROR', msg, meta));
+    if (getLevelIndex() <= 4 && shouldLogToConsole()) console.error(format('ERROR', msg, meta));
   },
 };
 export default logger;
@@ -50,11 +76,21 @@ function _pushCapture(id, level, msg, meta) {
 }
 
 export function startCapture(id) {
+  /**
+   * Start capturing logs for a given capture id.
+   * The capture buffer can be retrieved with `stopCapture(id)`.
+   * @param {string} id - Capture identifier (typically the testId)
+   */
   if (!id) return;
   _captures.set(id, []);
 }
 
 export function stopCapture(id) {
+  /**
+   * Stop capturing logs for the given id and return captured entries.
+   * @param {string} id - Capture identifier
+   * @returns {LogEntry[]} captured logs
+   */
   if (!id) return [];
   const out = _captures.get(id) || [];
   _captures.delete(id);
@@ -95,6 +131,10 @@ logger.error = _wrap(logger.error, 'error');
 
 // Expose an env helper for use in fixtures where setting an env var is simpler.
 export function setCaptureEnv(id) {
+  /**
+   * Helper to set the process env var used by fixtures to signal current capture id.
+   * @param {string|null} id
+   */
   if (id) process.env.__JECO_CURRENT_CAPTURE_ID = String(id);
   else delete process.env.__JECO_CURRENT_CAPTURE_ID;
 }

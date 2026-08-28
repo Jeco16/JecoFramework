@@ -7,6 +7,15 @@ import { BasePage } from './base.page.js';
 import * as failAssertions from '../assertions/fail.assertions.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * @module pages/login.page
+ * @description Page object modeling the login flow for the demo app.
+ */
+
+/**
+ * @class LoginPage
+ * @extends BasePage
+ */
 export class LoginPage extends BasePage {
   constructor(page) {
     super(page);
@@ -18,6 +27,12 @@ export class LoginPage extends BasePage {
     this.clickMenuButton = '#react-burger-menu-btn';
   }
 
+  /**
+   * Perform login flow using provided credentials.
+   * Throws via `failAssertions.fail()` when login doesn't appear successful.
+   * @param {string} username
+   * @param {string} password
+   */
   async login(username, password) {
     logger.info(`Attempting to login with username: ${username}`);
     await this.highlightAndFill(this.userInput, username);
@@ -30,6 +45,9 @@ export class LoginPage extends BasePage {
     }
   }
 
+  /**
+   * Perform logout flow and assert user input is visible again.
+   */
   async logout() {
     logger.info(`Attempting to logout`);
     await this.highlightAndClick(this.clickMenuButton);

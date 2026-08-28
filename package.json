@@ -1,8 +1,8 @@
 {
   "name": "JecoFramework",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "engines": {
     "node": ">=20.0.0"
@@ -19,7 +19,31 @@
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write \"**/*.{js,json,md}\"",
-    "selftest": "npx playwright test --project=self --reporter=list"
+    "selftest": "npx playwright test --project=self --reporter=list --workers=1"
+  },
+  "description": "Enterprise Playwright-based automation framework with custom reporting, fixtures and utilities.",
+  "keywords": [
+    "playwright",
+    "testing",
+    "automation",
+    "e2e",
+    "framework"
+  ],
+  "homepage": "https://github.com/Jeco16/JecoFramework#readme",
+  "bugs": {
+    "url": "https://github.com/Jeco16/JecoFramework/issues"
+  },
+  "author": "Jacopo Enrico Marinaccio",
+  "files": [
+    "src/",
+    "tests/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jeco16/JecoFramework.git"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.0",

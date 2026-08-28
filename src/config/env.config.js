@@ -6,6 +6,17 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 
 // Environment-specific configuration (base URLs).
 // Select the active environment via `ENV=<name>` (default: 'dev').
+/**
+ * @module config/env.config
+ * @description Centralized environment configuration with runtime overrides.
+ */
+
+/**
+ * @typedef {Object} EnvInfo
+ * @property {string} name - active environment name
+ * @property {string} baseURL - base URL for UI tests
+ * @property {string} apiURL - base URL for API tests
+ */
 const environments = {
   // Define additional environments as needed for your application
   dev: {
@@ -35,10 +46,13 @@ export const env = {
     return currentEnvName();
   },
   get baseURL() {
-    return (environments[currentEnvName()] || environments.dev).baseURL;
+    // Allow overriding the configured baseURL via environment variable `BASE_URL`.
+    // This makes `.env.example` (BASE_URL) effective without changing code.
+    return process.env.BASE_URL || (environments[currentEnvName()] || environments.dev).baseURL;
   },
   get apiURL() {
-    return (environments[currentEnvName()] || environments.dev).apiURL;
+    // Allow overriding the configured apiURL via environment variable `API_BASE_URL`.
+    return process.env.API_BASE_URL || (environments[currentEnvName()] || environments.dev).apiURL;
   },
 };
 

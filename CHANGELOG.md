@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.0] - 2026/08/28
+
+### Added
+
+- Self-tests: expanded `tests/self/` to validate loader/fixtures/reporter/logger flows; `npm run selftest` runs the `self` Playwright project with `--workers=1` to avoid race conditions and uploads the generated `report/` as a CI artifact.
+- Documentation: JSDoc added across core modules (`logger`, `loader`, `reporter`, `api`, `pages`) and examples updated in `README.md`.
+- `CONTIRBUTING.md` and `SECURITY.MD`
+
+<!-- end Unreleased -->
+
 ## [0.8.0] - 2026/08/28
 
 - Dependency security scanning in CI (`npm audit`)

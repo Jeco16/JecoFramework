@@ -8,6 +8,15 @@ import path from 'path';
 
 const DATA_DIR = path.resolve('src/data');
 
+/**
+ * @module data/loader
+ * @description Utilities to locate and load test data by `testId` from `src/data`.
+ */
+
+/**
+ * @typedef {Object<string, any>} DataObject
+ */
+
 async function exists(file) {
   try {
     await fs.access(file);
@@ -31,6 +40,15 @@ async function findFileRecursive(dir, filename) {
 }
 
 export async function loadByTestId(testId) {
+  /**
+   * Load JSON data for a given testId. Search strategy:
+   * 1. `src/data/<testId>.json`
+   * 2. recursively search `src/data` for `<testId>.json`
+   * 3. `src/data/<testId>/data.json`
+   * Returns an empty object when not found or on errors.
+   * @param {string} testId
+   * @returns {Promise<DataObject>}
+   */
   if (!testId) return {};
   const filename = `${testId}.json`;
   const direct = path.join(DATA_DIR, filename);
@@ -53,6 +71,11 @@ export async function loadByTestId(testId) {
 }
 
 export async function findFilePathByTestId(testId) {
+  /**
+   * Find the file path for a given testId using the same search strategy as `loadByTestId`.
+   * @param {string} testId
+   * @returns {Promise<string|null>} absolute path or null when not found
+   */
   if (!testId) return null;
   const filename = `${testId}.json`;
   const direct = path.join(DATA_DIR, filename);

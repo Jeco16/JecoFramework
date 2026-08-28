@@ -10,6 +10,7 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
 import path from 'path';
+import 'dotenv/config';
 
 export default defineConfig({
   // Set `CREATE_ARTIFACTS=true` to enable artifacts folder creation, otherwise

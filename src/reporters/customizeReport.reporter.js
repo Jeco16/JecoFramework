@@ -6,6 +6,25 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 import fs from 'fs/promises';
 import path from 'path';
 
+/**
+ * @module reporters/customizeReport
+ * @description Playwright custom reporter that aggregates per-test metadata from
+ * `report/data` (and Playwright attachments) and emits a single-file `report/index.html`.
+ */
+
+/**
+ * @typedef {Object} ReportMeta
+ * @property {string} title
+ * @property {string} testId
+ * @property {string} dataFile
+ * @property {string[]} keys
+ * @property {string} status
+ * @property {string|null} startTime
+ * @property {number|null} duration
+ * @property {Array<Object>} steps
+ * @property {Array<Object>} attachments
+ */
+
 function safeAccess(p) {
   return fs
     .access(p)
@@ -14,6 +33,9 @@ function safeAccess(p) {
 }
 
 export default class CustomizeReportReporter {
+  /**
+   * Custom Playwright reporter that prepares `report/data` and builds `report/index.html`.
+   */
   async onBegin() {
     try {
       const dataDir = path.join(process.cwd(), 'report', 'data');
@@ -28,6 +50,12 @@ export default class CustomizeReportReporter {
     }
   }
   async onEnd(config, result) {
+    /**
+     * Called by Playwright at the end of a run. It collects JSON metadata files,
+     * merges runtime results and writes a self-contained HTML report.
+     * @param {object} config - Playwright config object
+     * @param {object} result - Playwright run result
+     */
     try {
       const reportDir = path.resolve(process.cwd(), 'report');
       await fs.mkdir(reportDir, { recursive: true });

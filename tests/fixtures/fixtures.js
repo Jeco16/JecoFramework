@@ -3,6 +3,49 @@ Copyright 2026 Jacopo Enrico Marinaccio
 Licensed under the Apache License, Version 2.0
 You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 */
+import 'dotenv/config';
+import { pathToFileURL } from 'url';
+import pathModule from 'path';
+import fs from 'fs/promises';
+
+// If console logging is globally silenced, print a single helpful pointer
+// to the generated HTML report so users know where to look for logs.
+(async () => {
+  try {
+    const silent = String(process.env.LOG_SILENT || '').toLowerCase() === 'true';
+    const toConsoleFalse = String(process.env.LOG_TO_CONSOLE || '').toLowerCase() === 'false';
+    // Print the notice from the main Playwright runner process (not workers) to avoid duplication
+    const isPwWorker = typeof process.env.PW_WORKER_INDEX !== 'undefined';
+    if ((silent || toConsoleFalse) && !isPwWorker && !globalThis.__JECO_LOG_NOTICE_PRINTED) {
+      const reportIndex = pathModule.resolve(process.cwd(), 'report', 'index.html');
+      const url = pathToFileURL(reportIndex).href;
+      // Always print the notice for every run (no marker file)
+        // Friendly, concise message in English with highlighted link
+        // Use ANSI escape codes to make the report link more visible in terminals.
+        // eslint-disable-next-line no-console
+        try {
+          const title = '\x1b[1m\x1b[33mLogs are suppressed in the console.\x1b[0m';
+          const hint = '\x1b[1mFor full details open the test report:\x1b[0m';
+          const highlight = `\x1b[30m\x1b[43m ${url} \x1b[0m`; // black on yellow background
+          console.log('');
+          console.log(title);
+          console.log(hint, highlight);
+          console.log('');
+        } catch (e) {
+          // fallback to plain message
+          // eslint-disable-next-line no-console
+          console.log(`Logs are suppressed in the console. For full details, open the test report: ${url}`);
+        }
+        try {
+          globalThis.__JECO_LOG_NOTICE_PRINTED = true;
+        } catch (err) {
+          // ignore if cannot set global
+        }
+      }
+  } catch (e) {
+    // ignore failures building the message
+  }
+})();
 import { test as base } from '@playwright/test';
 import { BasePage } from '../../src/pages/base.page.js';
 import { LoginPage } from '../../src/pages/login.page.js';
@@ -14,11 +57,34 @@ import {
   verifyFieldExists,
 } from '../../src/api/api.assertions.js';
 import { loadByTestId, findFilePathByTestId } from '../../src/data/loader.js';
-import fs from 'fs/promises';
 import path from 'path';
 
+/**
+ * Fixtures exported for tests. Provides `basePage`, `testData`, `api`, and `loginPage`.
+ * @module tests/fixtures
+ */
+
+/**
+ * @typedef {Object} FinalMeta
+ * @property {string} title
+ * @property {string|null} testId
+ * @property {string} dataFile
+ * @property {string[]} keys
+ * @property {string} status
+ * @property {string|null} startTime
+ * @property {number|null} duration
+ * @property {Array<Object>} steps
+ * @property {Array<Object>} attachments
+ */
+
 export const test = base.extend({
-  // Base fixture for the base page -------------
+  /**
+   * Provide a `BasePage` instance bound to the Playwright `page`.
+   * @fixture
+   * @name basePage
+   * @param {{page: import('@playwright/test').Page}} context
+   * @param {(instance: BasePage) => Promise<void>} use
+   */
   basePage: async ({ page }, use) => {
     const basePageInstance = new BasePage(page);
 
@@ -31,6 +97,16 @@ export const test = base.extend({
     await use(basePageInstance);
   },
 
+  /**
+   * Load per-test data by convention (see `src/data`) and attach test metadata.
+   * Writes a metadata JSON file into `report/data/<testId>-<timestamp>.json` containing
+   * a `FinalMeta` object and copies Playwright attachments into `report/attachments/<testId>/`.
+   * @fixture
+   * @name testData
+   * @param {{page: import('@playwright/test').Page}} context
+   * @param {(data: any) => Promise<void>} use
+   * @param {TestInfo} testInfo
+   */
   testData: async ({ page: _page }, use, testInfo) => {
     void _page;
     const title = testInfo.title;
@@ -199,8 +275,14 @@ export const test = base.extend({
     }
   },
 
-  // API fixture -------------------------------
-
+  /**
+   * Provide an `ApiClient` instance backed by a Playwright `APIRequestContext`.
+   * Honors `API_BASE_URL` / `BASE_URL` env overrides and `API_IGNORE_HTTPS_ERRORS`.
+   * @fixture
+   * @name api
+   * @param {{playwright: import('@playwright/test').Playwright}} context
+   * @param {(api: ApiClient) => Promise<void>} use
+   */
   api: async ({ playwright }, use) => {
     const baseURL = process.env.API_BASE_URL || process.env.BASE_URL || '';
     // Defaults to true (needed e.g. behind corporate TLS-inspecting proxies); set
@@ -231,8 +313,13 @@ export const test = base.extend({
     }
   },
 
-  // Login page fixture -------------------------------
-
+  /**
+   * Provide a `LoginPage` instance for test flows that need login/logout actions.
+   * @fixture
+   * @name loginPage
+   * @param {{page: import('@playwright/test').Page}} context
+   * @param {(loginPage: LoginPage) => Promise<void>} use
+   */
   loginPage: async ({ page }, use) => {
     const loginPageInstance = new LoginPage(page);
     await use(loginPageInstance);
