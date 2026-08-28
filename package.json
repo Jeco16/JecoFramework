@@ -1,6 +1,6 @@
 {
   "name": "JecoFramework",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
@@ -21,7 +21,7 @@
     "format": "prettier --write \"**/*.{js,json,md}\"",
     "selftest": "npx playwright test --project=self --reporter=list --workers=1",
     "docs": "typedoc",
-    "scaffold:build-template": "node packages/create-jeco-framework/bin/create.js --dry-run"
+    "scaffold:dry-run": "node packages/create-jeco-framework/bin/create.js --dry-run demo-app"
   },
   "description": "Enterprise Playwright-based automation framework with custom reporting, fixtures and utilities.",
   "keywords": [

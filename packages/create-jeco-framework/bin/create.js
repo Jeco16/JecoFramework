@@ -16,7 +16,7 @@ const templateRoot = path.join(__dirname, '..', 'template');
 async function run() {
   const dest = path.resolve(cwd, target);
   if (dryRun) console.log('[dry-run] Would create project at', dest);
-  await fs.ensureDir(dest);
+  if (!dryRun) await fs.ensureDir(dest);
 
   // Copy template files, render ejs templates
   const files = await fs.readdir(templateRoot);

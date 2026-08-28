@@ -2,10 +2,19 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026/08/28
+
 ### Added
 
 - `npm run docs` generates API documentation with TypeDoc into `docs/api/` (git-ignored), supporting the TypeScript-style JSDoc annotations (e.g. `{import('@playwright/test').Page}`) already used across `src/`.
 - `MIGRATION.md` summarizing breaking/behavioral changes to review when upgrading to `v1.0.0`.
+- `create-jeco-framework`: a scaffolding CLI, published as its own npm package (`packages/create-jeco-framework`), to bootstrap new projects from the JecoFramework template (`npx create-jeco-framework my-app`).
+- `packages/create-jeco-framework/scripts/export-template.js`: syncs the scaffold `template/` folder from the framework sources (`src/`, `tests/`, config files).
+- CI workflow `publish-create-package.yml` to publish `create-jeco-framework` to npm on changes under `packages/create-jeco-framework/**` (manual `workflow_dispatch` trigger also supported).
+
+### Changed
+
+- First stable public release (`1.0.0`); the repository is now a private npm workspaces root (`private: true`, `workspaces: ["packages/*"]`) hosting the framework and the `create-jeco-framework` scaffold subpackage side by side.
 
 ## [0.9.0] - 2026/08/28
 

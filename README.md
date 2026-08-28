@@ -37,6 +37,7 @@ Licensed under Apache 2.0.
   - [Viewing the report](#viewing-the-report)
 - [Logger \& Console](#logger--console)
 - [Documentation](#documentation)
+- [Scaffolding a new project](#scaffolding-a-new-project)
 - [Release \& CI notes](#release--ci-notes)
 - [Self-tests](#self-tests)
 - [Element highlighting](#element-highlighting)
@@ -59,7 +60,7 @@ npm run test
 If you want to scaffold a new project from within this repository (local development of the scaffolder), use:
 
 ```bash
-npm run scaffold:build-template
+npm run scaffold:dry-run
 ```
 
 Run a single project (e2e or api):
@@ -392,10 +393,30 @@ npm run docs
 
 Output is written to `docs/api/` (git-ignored, regenerated on demand — open `docs/api/index.html`).
 
-## Release & CI notes
+## Scaffolding a new project
 
-- Releases are currently versioned and tagged manually (`package.json` version bump + git tag). `semantic-release`/Conventional Commits automation is **not yet configured** — it is a `v1.0.0` roadmap item; see `MIGRATION.md` and `CHANGELOG.md` for the current process.
+A companion CLI, [`create-jeco-framework`](https://www.npmjs.com/package/create-jeco-framework) (source: `packages/create-jeco-framework/`), bootstraps a new project from this framework's template:
+
+```bash
+npx create-jeco-framework my-app
+cd my-app
+npm install
+npm run selftest
+```
+
+Use `--dry-run` to preview which files would be created without writing anything:
+
+```bash
+npx create-jeco-framework --dry-run my-app
+```
+
+The template served by the CLI is kept in sync with this repository via `packages/create-jeco-framework/scripts/export-template.js`; see `packages/create-jeco-framework/PUBLISH.md` for the release process.
+
+## Release \& CI notes
+
+- Releases are currently versioned and tagged manually (`package.json` version bump + git tag). `semantic-release`/Conventional Commits automation is **not yet configured** — it remains a roadmap item; see `MIGRATION.md` and `CHANGELOG.md` for the current process.
 - The `selftest` job runs first in CI and uploads `report/` as an artifact; the main `test` job depends on it. Ensure the CI runner has permissions to create artifacts and access any required secrets.
+- `create-jeco-framework` is published independently via `.github/workflows/publish-create-package.yml` (triggered on push to `main` under `packages/create-jeco-framework/**`, or manually via `workflow_dispatch`).
 
 ## Self-tests
 
@@ -455,13 +476,14 @@ For more information, consult the **CHANGELOG.md** file.
 
 ## Roadmap
 
-### v1.0.0
+### v1.0.0 — done
 
-- Stable public release
-- npm package
+- ✅ Stable public release
+- ✅ `create-jeco-framework` scaffolding CLI published to npm (see [Scaffolding a new project](#scaffolding-a-new-project))
 
 ### future goals
 
 - Docker integration
 - MCP integration
 - `semantic-release` + Conventional Commits (commitlint/husky) for automated releases and changelog generation
+- Publish `create-jeco-framework` to GitHub Packages in addition to npm
