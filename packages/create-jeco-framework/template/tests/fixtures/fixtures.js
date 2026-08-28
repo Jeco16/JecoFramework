@@ -5,7 +5,7 @@ You may obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
 */
 import 'dotenv/config';
 import { pathToFileURL } from 'url';
-import pathModule from 'path';
+import path from 'path';
 import fs from 'fs/promises';
 
 // If console logging is globally silenced, print a single helpful pointer
@@ -17,7 +17,7 @@ import fs from 'fs/promises';
     // Print the notice from the main Playwright runner process (not workers) to avoid duplication
     const isPwWorker = typeof process.env.PW_WORKER_INDEX !== 'undefined';
     if ((silent || toConsoleFalse) && !isPwWorker && !globalThis.__JECO_LOG_NOTICE_PRINTED) {
-      const reportIndex = pathModule.resolve(process.cwd(), 'report', 'index.html');
+      const reportIndex = path.resolve(process.cwd(), 'report', 'index.html');
       const url = pathToFileURL(reportIndex).href;
       // Always print the notice for every run (no marker file)
       // Friendly, concise message in English with highlighted link
@@ -59,7 +59,6 @@ import {
   verifyFieldExists,
 } from '../../src/api/api.assertions.js';
 import { loadByTestId, findFilePathByTestId } from '../../src/data/loader.js';
-import path from 'path';
 
 /**
  * Fixtures exported for tests. Provides `basePage`, `testData`, `api`, and `loginPage`.
