@@ -1,5 +1,5 @@
 name: Publish create-jeco-framework
-
+# This workflow is triggered on push to the main branch for changes in the packages/create-jeco-framework directory.
 on:
   push:
     branches: [ main ]
