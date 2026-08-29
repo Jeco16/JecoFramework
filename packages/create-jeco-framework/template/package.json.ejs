@@ -3,7 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "selftest": "npx playwright test --project=self --reporter=list --workers=1"
-  }
+    "pretest": "node -e \"if (process.env.CREATE_PLAYWRIGHT_REPORT==='true') require('fs').mkdirSync('./playwright-report',{recursive:true});\"",
+    "test": "npx playwright test --project=e2e --project=api",
+    "test:e2e": "npx playwright test --project=e2e",
+    "test:api": "npx playwright test --project=api",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "cross-env PWDEBUG=1 npx playwright test",
+    "show-report": "npx playwright show-report",
+    "install:browsers": "npx playwright install",
+    "selftest": "npx playwright test --project=self --reporter=list --workers=1",
+    "docs": "typedoc"
+  },
 }

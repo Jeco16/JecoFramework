@@ -40,13 +40,7 @@ async function run() {
         dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`
       );
     } else {
-      // Prefer copying package README if available in the scaffold package root
-      const packageReadme = path.join(__dirname, '..', 'README.md');
-      if ((file === 'README.md.ejs' || file === 'README.md') && (await fs.pathExists(packageReadme))) {
-        const destReadme = path.join(dest, 'README.md');
-        if (!dryRun) await fs.copy(packageReadme, destReadme, { overwrite: true });
-        console.log(dryRun ? `[dry-run] copy ${packageReadme} -> ${destReadme}` : `copy ${packageReadme} -> ${destReadme}`);
-      } else if (file.endsWith('.ejs')) {
+      if (file.endsWith('.ejs')) {
         const tpl = await fs.readFile(srcPath, 'utf8');
         const out = ejs.render(tpl, { name: path.basename(dest) });
         if (!dryRun) await fs.writeFile(destPath, out, 'utf8');
