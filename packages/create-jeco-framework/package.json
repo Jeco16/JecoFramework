@@ -1,6 +1,6 @@
 {
   "name": "create-jeco-framework",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Scaffold CLI for creating new projects from the JecoFramework template.",
   "bin": {
     "create-jeco-framework": "./bin/create.js"

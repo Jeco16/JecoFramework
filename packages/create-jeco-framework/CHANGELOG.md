@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2026/08/29
+
+### Added
+
+- new `dev dependecies` in `package.json`
+
 ## [1.0.2] - 2026/08/29
 
 Stable package
