@@ -32,7 +32,10 @@ async function run() {
   const files = await fs.readdir(baseSource);
   for (const file of files) {
     const srcPath = path.join(baseSource, file);
-    const destPath = path.join(dest, file.replace(/\.ejs$/, ''));
+    // npm strips files literally named ".gitignore" from published tarballs, so the
+    // template ships it as "gitignore" and it's restored to a dotfile here.
+    const destName = file === 'gitignore' ? '.gitignore' : file.replace(/\.ejs$/, '');
+    const destPath = path.join(dest, destName);
     const stat = await fs.stat(srcPath);
     if (stat.isDirectory()) {
       if (!dryRun) await fs.copy(srcPath, destPath, { overwrite: true });
@@ -42,12 +45,22 @@ async function run() {
     } else {
       if (file.endsWith('.ejs')) {
         const tpl = await fs.readFile(srcPath, 'utf8');
-        const out = ejs.render(tpl, { name: path.basename(dest) });
+        const now = new Date();
+        const context = {
+          name: path.basename(dest),
+          logsilent: process.env.LOG_SILENT === 'true' || !!args['log-silent'],
+          date: `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`,
+        };
+        const out = ejs.render(tpl, context);
         if (!dryRun) await fs.writeFile(destPath, out, 'utf8');
-        console.log(dryRun ? `[dry-run] render ${srcPath} -> ${destPath}` : `render ${srcPath} -> ${destPath}`);
+        console.log(
+          dryRun ? `[dry-run] render ${srcPath} -> ${destPath}` : `render ${srcPath} -> ${destPath}`
+        );
       } else {
         if (!dryRun) await fs.copy(srcPath, destPath, { overwrite: true });
-        console.log(dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`);
+        console.log(
+          dryRun ? `[dry-run] copy ${srcPath} -> ${destPath}` : `copy ${srcPath} -> ${destPath}`
+        );
       }
     }
   }

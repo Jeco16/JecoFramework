@@ -24,7 +24,7 @@ npx create-jeco-framework --dry-run my-app
 
 ## Local development
 
-From a checkout of this repository:
+From a checkout of this repository (https://github.com/Jeco16/JecoFramework):
 
 ```bash
 node bin/create.js --dry-run my-app

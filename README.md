@@ -44,7 +44,7 @@ Licensed under Apache 2.0.
 - [Eslint/Prettier](#eslintprettier)
 - [Version](#version)
 - [Roadmap](#roadmap)
-  - [v1.0.0](#v100)
+  - [v1.0.0 — done](#v100)
   - [future goals](#future-goals)
 
 ## Quick Start
@@ -135,47 +135,25 @@ npx playwright install
 
 ```text
 │
-├── 📁 .github/workflows
-│   │
-│   └── 📄ci.yml → Configuration file where the steps for CI are defined
+├── 📁 .github/workflows → Configuration file where the steps for CI are defined
 │
-├──🗄️ node_modules → Node file installation folder
-│
-├──🗄️ report → Custom standalone HTML report (regenerated on every run, git-ignored)
+├── 📁 packages/create-jeco-framework → CLI scaffold tool for JecoFramework
 │
 ├── 📁 src
 │   │
-│   ├── 🟦 api
-│   │   │
-│   │   ├── 📄 api.client.js → HTTP transport layer
-│   │   │
-│   │   └── 📄 api.assertions.js → Domain assertions for API responses
+│   ├── 🟦 api → HTTP transport layer and Domain assertions for API responses
 │   │
 │   ├── 🟦 assertions → Management of assertions
 │   │
 │   ├── 🟦 config → Environment-specific base URLs and credentials
 │   │
-│   ├── 🟦 data
-│   │   │
-│   │   ├── 📄 loader.js → Locates and loads per-test JSON data files by testId
-│   │   │
-│   │   ├── 🟩 e2e/ → Per-test JSON data files for e2e tests (e.g. E2E_01.json)
-│   │   │
-│   │   └── 🟩 api/ → Per-test JSON data files for api tests (e.g. API_01.json)
+│   ├── 🟦 data → data files for e2e tests and api tests and json loader
 │   │
-│   ├── 🟦 pages
-│   │   │
-│   │   ├── 📄 base.page.js → Generic POM base class (incl. `highlight`/`highlightAndClick`/`highlightAndFill`)
-│   │   │
-│   │   └── 📄 login.page.js → Example page object
+│   ├── 🟦 pages → Generic POM base class and Example page object
 │   │
 │   ├── 🟦 reporters → Custom Playwright reporter generating the standalone HTML report
 │   │
-│   └── 🟦 utils
-│       │
-│       ├── 🟩 images → Image source for the README
-│       │
-│       └── 📄 logger.js → Log management
+│   └── 🟦 utils → Log management and Image source for the README
 │
 ├── 📁 tests
 │   │
@@ -187,25 +165,15 @@ npx playwright install
 │   │
 │   └── 🟦 fixtures → Generic fixture file (page objects, api client, per-test data loading + metadata)
 │
-├── 📄 .env.example
+├── 📄 .env.example → Example of .env file
 │
 ├── 📄 .eslintrc.cjs / .eslintignore / .prettierrc / .prettierignore → Lint/format config
 │
 ├── 📄 .gitignore
 │
-├── 📄 CHANGELOG.md
+├── 📄 CHANGELOG.md / CONTRIBUTING.md / LICENSE / MIGRATION.md / NOTICE
 │
-├── 📄 CONTRIBUTING.md
-│
-├── 📄 LICENSE
-│
-├── 📄 MIGRATION.md → Breaking/behavioral changes to review when upgrading to a new major version
-│
-├── 📄 NOTICE
-│
-├── 📄 package-lock.json
-│
-├── 📄 package.json
+├── 📄 package-lock.json / package.json
 │
 ├── 📄 playwright.config.js → Single source of truth: `projects` for `e2e`, `api` and `self`
 │
